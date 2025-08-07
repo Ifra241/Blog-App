@@ -1,53 +1,99 @@
+'use client';
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { loginUser } from "@/services/authService";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
+export default function Signin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-export default function signin(){
-    return(
-        
-        <main className="min-h-screen flex items-center justify-center bg-gray-100">
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle className="text-2xl text-center">Sign In to Your Account</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form className="space-y-4">
-                        <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" placeholder="Enter your Eamil" required/>
-                        </div>
-                        
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" placeholder="Enter your Password" required/>
-                        </div>
-                    
-                    
-                     <Button type="submit" className="w-full bg-blue-700 hover:bg-blue-600">Sign Up</Button>
+    try {
+      const res = await loginUser({ email, password });
+      console.log("Login Success:", res);
+      toast.success("Successfuly login");
+      
+      
+      
 
-                        <div className="space-y-2">
-                            <p className="text-center font-bold">OR</p>
-                        </div>
-                        <div>
-                            <Button variant="secondary" className="w-full bg-blue-600 text-white text-md hover:bg-blue-500">Continue With Google</Button>
-                        </div>
-                        <div>
-                            <p className="text-center mt-4">If You have no Account?{" "}
-                                <Link href="/signup" className="text-blue-600 font-semibold">Sign Up</Link>
-                            </p>
-                        </div>
+      router.push("/dashboard"); 
+    } catch(error){
+        console.error("Login Failed",error)
+        toast.error("Login failed")
+    }
+  }
 
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-gray-100">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Sign In to Your Account</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-                    </form>
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
 
+            <Button
+              type="submit"
+              className="w-full bg-blue-800 hover:bg-blue-700 font-semibold"
+            >
+              Sign In
+            </Button>
 
-                </CardContent>
-            </Card>
-        </main>
+            <div className="space-y-2">
+              <p className="text-center font-bold">OR</p>
+            </div>
 
-    );
+            <Button
+              variant="secondary"
+              onClick={() => signIn("google")}
+              className="w-full bg-blue-600 text-white text-md hover:bg-blue-500"
+            >
+              Continue With Google
+            </Button>
+
+            <p className="text-center mt-4">
+              If You have no Account?{" "}
+              <Link href="/signup" className="text-blue-600 font-semibold">
+                Sign Up
+              </Link>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
+    </main>
+  );
 }
