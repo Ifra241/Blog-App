@@ -2,6 +2,7 @@ import User from "@/lib/models/User";
 import { connectToDatabase } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import cloudinary from "@/lib/cloudinary";
 
 
 
@@ -29,13 +30,24 @@ export async function POST(request:Request){
         }
         //hashed password
         const hashedPassword=await bcrypt .hash(password,10);
+        const firstLetter=fullname.charAt(0).toUpperCase();
+        const defaultAvatarUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/w_200,h_200,c_fill,r_max,co_white,g_center,l_text:Arial_100_bold:${firstLetter}/v1/avatar.png`;
+
+
+        let imageUrl=defaultAvatarUrl
+        if(image){
+            const uploadResult=await cloudinary.uploader .upload(image,{
+                folder:"profile-image",
+            });
+            imageUrl=uploadResult.secure_url;
+        }
 
         //Create User
         const newUser=new User({
             fullname,
             email,
             password:hashedPassword,
-            image:image||"",
+            image:imageUrl||"",
         })
         await newUser.save();
 

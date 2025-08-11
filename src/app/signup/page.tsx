@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { toast } from "sonner"
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -20,6 +21,8 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const[image,setImage]=useState<File|null>(null);
+  const[showPassword, setShowPassword]=useState(false);
+  const[showconfrimPassword ,setShowConfirmPassword]=useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -83,15 +86,21 @@ export default function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
+              <div className="relative">
               <Input
                 id="password"
-                type="password"
+                type={showPassword?"text":"password"}
                 required
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
               />
+              <button  type="button" className="absolute inset-y-0 right-3 flex items-center" onClick={()=>setShowPassword((prev)=>!prev)} >
+                {showPassword?<EyeOff size={18}/>:<Eye size={18}/>}
+              </button>
+              </div>
+
                 {password.length > 0 && password.length < 6 && (
     <p className="text-red-500 text-sm mt-1">
       Password must be at least 8 characters
@@ -101,14 +110,19 @@ export default function SignupPage() {
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative">
               <Input
                 id="confirmPassword"
-                type="password"
+                type={showconfrimPassword?"text":"password"}
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm your password"
               />
+              <button type="button" className="absolute inset-y-0 right-3 flex items-center" onClick={()=>setShowConfirmPassword((prev)=>!prev)}>
+                {showconfrimPassword?<EyeOff size={18}/>:<Eye size={18}/>}
+              </button>
+              </div>
             </div>
 
             <div className="space-y-2">

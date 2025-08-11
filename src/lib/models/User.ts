@@ -1,8 +1,16 @@
-import { model, models, Schema } from "mongoose";
+import { model, models, Schema,Document } from "mongoose";
+
+export interface User extends Document{
+
+    fullname:string;
+    email:string;
+    password:string;
+    image?:string;
+}
 
 
 
-const UserSchema=new Schema({
+const UserSchema=new Schema<User>({
     fullname:{
         type:String,
         required:true,

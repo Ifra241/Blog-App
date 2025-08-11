@@ -10,11 +10,14 @@ import Link from "next/link";
 import { loginUser } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+
 
 export default function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const[showPassword,setShowPassword]=useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,14 +59,22 @@ export default function Signin() {
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
+                            <div className="relative">
+
               <Input
                 id="password"
-                type="password"
+                type={showPassword?"text":"password"}
                 placeholder="Enter your Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+  <button  type="button" className="absolute inset-y-0 right-3 flex items-center" onClick={()=>setShowPassword((prev)=>!prev)} >
+                   
+   {showPassword?<EyeOff size={18}/>:<Eye size={18}/>}
+
+                   </button>
+            </div>
             </div>
 
             <Button
