@@ -99,7 +99,7 @@ export default function Signin() {
             <p className="text-center mt-4">
               If You have no Account?{" "}
               <Link href="/signup" className="text-blue-600 font-semibold">
-                Sign Up
+                SignUp
               </Link>
             </p>
           </form>

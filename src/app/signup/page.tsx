@@ -11,18 +11,22 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { setUser } from "@/store/userSlice";
 
 export default function SignupPage() {
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [fullname, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const[image,setImage]=useState<File|null>(null);
-  const[showPassword, setShowPassword]=useState(false);
-  const[showconfrimPassword ,setShowConfirmPassword]=useState(false);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,13 +38,18 @@ export default function SignupPage() {
 
     try {
       setLoading(true);
-      
 
-    
-      const result = await signupUser({ fullname, email, password, confirmPassword,image });
+      const res = await signupUser({ fullname, email, password, confirmPassword, profilePic });
 
-      toast.success(result.message || "Signup successful!");
+      //  Save user info to Redux
+      dispatch(setUser({
+        id: res.user.id,
+        username: res.user.fullname,
+        email: res.user.email,
+        profilePic: res.user.profilePic,
+      }));
 
+      toast.success(res.message || "Signup successful!");
       router.push("/signin");
     } catch (error) {
       if (error instanceof Error) {
@@ -61,6 +70,7 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Fullname */}
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
               <Input
@@ -72,6 +82,7 @@ export default function SignupPage() {
               />
             </div>
 
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -84,62 +95,68 @@ export default function SignupPage() {
               />
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
-              <Input
-                id="password"
-                type={showPassword?"text":"password"}
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-              />
-              <button  type="button" className="absolute inset-y-0 right-3 flex items-center" onClick={()=>setShowPassword((prev)=>!prev)} >
-                {showPassword?<EyeOff size={18}/>:<Eye size={18}/>}
-              </button>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  minLength={6}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-3 flex items-center"
+                  onClick={() => setShowPassword(prev => !prev)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
-
-                {password.length > 0 && password.length < 6 && (
-    <p className="text-red-500 text-sm mt-1">
-      Password must be at least 8 characters
-    </p>
-  )}
+              {password.length > 0 && password.length < 6 && (
+                <p className="text-red-500 text-sm mt-1">
+                  Password must be at least 6 characters
+                </p>
+              )}
             </div>
 
+            {/* Confirm Password */}
             <div className="space-y-2">
               <Label htmlFor="confirmPassword">Confirm Password</Label>
               <div className="relative">
-              <Input
-                id="confirmPassword"
-                type={showconfrimPassword?"text":"password"}
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your password"
-              />
-              <button type="button" className="absolute inset-y-0 right-3 flex items-center" onClick={()=>setShowConfirmPassword((prev)=>!prev)}>
-                {showconfrimPassword?<EyeOff size={18}/>:<Eye size={18}/>}
-              </button>
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-3 flex items-center"
+                  onClick={() => setShowConfirmPassword(prev => !prev)}
+                >
+                  {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
               </div>
             </div>
 
+            {/* Profile Image */}
             <div className="space-y-2">
-  <Label htmlFor="image">Profile Image (optional)</Label>
-  <Input
-    id="image"
-    type="file"
-    accept="image/*"
-    onChange={(e)=>{
-        if(e.target.files){
-            setImage(e.target.files[0]);
-        }
-    }}
-    
-  />
-</div>
-
+              <Label htmlFor="image">Profile Image (optional)</Label>
+              <Input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files) setProfilePic(e.target.files[0]);
+                }}
+              />
+            </div>
 
             <Button
               type="submit"
@@ -164,7 +181,7 @@ export default function SignupPage() {
             <p className="mt-4 text-center">
               Already have an account?{" "}
               <Link href="/signin" className="text-blue-600 font-semibold">
-                Sign In
+                SignIN
               </Link>
             </p>
           </form>

@@ -2,8 +2,12 @@
 
 import { BlogProp } from "@/lib/models/Blog";
 import { createBlog, CreateBlogData } from "@/services/blogService";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { FiBell } from "react-icons/fi";
+import { FcAddImage } from "react-icons/fc";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+
 
 export default function CreateBlog() {
   const [title, setTitle] = useState("");
@@ -11,11 +15,32 @@ export default function CreateBlog() {
   const[loading,setLoading]=useState(false);
   const[error,setError]=useState<string|null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [image, setImage] = useState<File | null>(null);
+ const fileInputRef=useRef<HTMLInputElement>(null);
+//current user
+  const currentUser=useSelector((state:RootState)=>state.user.currentUser);
+
+console.log("Current user in CreateBlog:", currentUser);
 
 
-  const canPublish = title.trim() !== "" && content.trim() !== "";
+    function handleImage(e:React.ChangeEvent<HTMLInputElement>){
+      if(e.target.files && e.target.files.length>0){
+        setImage(e.target.files[0]);
+      }
+    }
+    function handleClick(){
+      if(fileInputRef.current){
+        fileInputRef.current.click();
+      }
+    }
+
+  const canPublish = title.trim() !== "" && content.trim() !== "" &&currentUser;
 
 async  function handlePublish() {
+  if(!currentUser){
+    setError("You need to Login to Publish Blog");
+    return;
+  }
     if (!canPublish) return;
     setLoading(true);
     setError(null);
@@ -24,12 +49,16 @@ async  function handlePublish() {
       const data:CreateBlogData={
         title,
         content,
-        author:"Iffi"
+        author:currentUser?.fullname||"Unknown",
+        profilePic:currentUser?.profilePic|| "/default-avatar.png",
+        image,
       };
+        console.log("Sending blog data:", data);
       const newBlog:BlogProp=await createBlog(data);
       setSuccess(`Blog "${newBlog.title}"published successfully!`);
       setTitle("");
       setContent("");
+      setImage(null);
       }catch{
         setError( "Failed to Publish Blog");
       }finally{
@@ -70,12 +99,13 @@ async  function handlePublish() {
           
           className="text-5xl font-serif font-semibold placeholder-gray-300 focus:outline-none border-b-2 border-gray-300 pb-2 resize-none"
         />
+          <input type="file" ref={fileInputRef} onChange={handleImage} accept="image" style={{display:"none"}} />
         <button
           type="button"
-          className="w-12 h-12 rounded-full border border-gray-400 text-gray-600 text-3xl flex items-center justify-center hover:bg-gray-100"
-          onClick={() => document.getElementById("imageUpload")?.click()}
+          onClick={handleClick}
+          className="w-12 h-12 rounded-full  text-gray-600 text-3xl flex items-center justify-center  hover:bg-gray-100"
         >
-          +
+          <FcAddImage size={36}/>
         </button>
       </div>
 

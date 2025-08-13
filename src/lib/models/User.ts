@@ -5,7 +5,7 @@ export interface User extends Document{
     fullname:string;
     email:string;
     password:string;
-    image?:string;
+    profilePic ?:string;
 }
 
 
@@ -25,7 +25,7 @@ const UserSchema=new Schema<User>({
         type:String,
         required:true,
     },
-    image:{
+    profilePic :{
         type:String,
         default:"",
     },

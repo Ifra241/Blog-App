@@ -5,6 +5,7 @@ export interface BlogProp extends Document{
     title:string;
     content:string;
     author:string;
+    image?:string
     createdAt:Date;
     updatedAt:Date;
 }
@@ -26,6 +27,10 @@ const BlogSchema:Schema<BlogProp>=new Schema(
             type:String,
             required:true,
         },
+        image:{
+            type:String,
+            default:"",
+        }
     },
             { timestamps:true}
 

@@ -6,6 +6,8 @@ export async function POST(req:Request){
     try{
         await connectToDatabase();
         const body=await req.json();
+        console.log("Received blog data:", body);
+
 
         if(!body.title||!body.content||!body.author){
             return NextResponse.json(
@@ -17,8 +19,9 @@ const newBlog=await Blog.create({
     title:body.title,
     content:body.content,
     author:body.author,
-
+image:body.image,
 });
+
 
 return NextResponse.json(newBlog, { status: 201 });
   } catch (error) {

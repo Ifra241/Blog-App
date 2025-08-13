@@ -7,15 +7,15 @@ interface SignupData {
   email: string;
   password: string;
   confirmPassword: string;
-  image?: File|null; }
+  profilePic ?: File|null; }
 
 export async function signupUser(data: SignupData) {
   try {
     let imageUrl = "";
 
-    if (data.image) {
+    if (data.profilePic ) {
       const formData = new FormData();
-      formData.append("file", data.image);
+      formData.append("file", data.profilePic );
       formData.append("upload_preset", "unsigned_preset");
       formData.append("folder", "profile-image");
 
@@ -25,6 +25,8 @@ export async function signupUser(data: SignupData) {
       });
 
       const result = await res.json();
+      console.log("Cloudinary Upload Result:", result);
+
       imageUrl = result.secure_url;
     }
 
@@ -33,7 +35,7 @@ export async function signupUser(data: SignupData) {
       email: data.email,
       password: data.password,
       confirmPassword: data.confirmPassword,
-      image: imageUrl,
+      profilePic : imageUrl,
     });
 
     return response.data;
@@ -54,6 +56,11 @@ interface LoginData{
 export async function loginUser(data:LoginData){
     try{
         const res=await axios.post("/api/auth/login",data);
+                if(res.data.user){
+                  localStorage.setItem("user",JSON.stringify(res.data.user));
+
+                }
+
         return res.data;
     }catch(error){
         console.error("Login Error:",error);

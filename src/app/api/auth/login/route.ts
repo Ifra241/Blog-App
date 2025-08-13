@@ -5,6 +5,11 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
 
+function createCookie(token:string){
+    return `token=${token};path=/;HttpOnly;${
+        process.env.NODE_ENV==="production"?"Secure; " : ""
+    } SameSite=Strict;Max-Age=${7*24*60*60}`;
+}
 
 
 export async function POST(request:Request){
@@ -36,13 +41,17 @@ export async function POST(request:Request){
 
         );
         //send token and user info
-        return NextResponse.json({message:"Login successful",token, user:{
+        const response= NextResponse.json({message:"Login successful",token, user:{
             _id:user._id,
             fullname:user.fullname,
             email:user.email,
-            image:user.image,
+            profilePic:user.profilePic,
         },
     },{status:200});
+    //set cookies
+        response.headers.set("Set-Cookie", createCookie(token));
+
+    return response;
     }catch(error){
         console.error("[LOGIN_ERROR]",error);
       return NextResponse.json({message:"Something went Wrong"},{status:500});
