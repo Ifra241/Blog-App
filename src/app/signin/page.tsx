@@ -19,18 +19,16 @@ export default function Signin() {
   const router = useRouter();
   const[showPassword,setShowPassword]=useState(false);
 
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     try {
-      const res = await loginUser({ email, password });
-      console.log("Login Success:", res);
-      toast.success("Successfuly login");
-      
-      
-      
-
-      router.push("/dashboard"); 
+     await loginUser({ email, password });
+    
+     toast.success("Successfuly login");
+        router.push("/dashboard"); 
+         
     } catch(error){
         console.error("Login Failed",error)
         toast.error("Login failed")
@@ -38,6 +36,9 @@ export default function Signin() {
   }
 
   return (
+    <>
+    
+
     <main className="min-h-screen flex items-center justify-center bg-gray-100">
       <Card className="w-full max-w-md">
         <CardHeader>
@@ -106,5 +107,6 @@ export default function Signin() {
         </CardContent>
       </Card>
     </main>
+    </>
   );
 }

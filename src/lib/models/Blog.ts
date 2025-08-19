@@ -29,7 +29,7 @@ const BlogSchema:Schema<BlogProp>=new Schema(
         },
         image:{
             type:String,
-            default:"",
+            required:true,
         }
     },
             { timestamps:true}

@@ -50,12 +50,6 @@ export default function Dashboard() {
     return <p className="text-red-600 font-bold mt-28 ml-6 text-xl">
       Failed to load blogs
     </p>;
-    //Logout
-const handleLogout=()=>{
-  dispatch(logoutUser());
-  localStorage.removeItem("user");
-  router.push("/")
-}
 //handleclick
 const handleClick=()=>{
   if(currentUser){
@@ -71,6 +65,15 @@ const handleClick=()=>{
 
     },1500);
   }
+};
+  //Logout
+const handleLogout=()=>{
+  if(!currentUser){
+    alert("You are not logged in");
+    return;
+  }
+  dispatch(logoutUser());
+  router.push("/");
 };
   return (
     <>
@@ -120,7 +123,8 @@ const handleClick=()=>{
           </Link>
           <Tooltip>
         <TooltipTrigger asChild>
-          <button onClick={handleLogout} className= " hover:bg-gray-200"><RiLogoutBoxFill size={42}/></button>
+              <button onClick={handleLogout} className= " hover:bg-gray-200"><RiLogoutBoxFill size={42}/></button>
+
             </TooltipTrigger>
         <TooltipContent side="top" align="center">
           Logout

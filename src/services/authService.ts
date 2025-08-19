@@ -1,41 +1,40 @@
 import axios from "axios";
 
-
-
 interface SignupData {
   fullname: string;
   email: string;
   password: string;
   confirmPassword: string;
-  profilePic ?: File|null; }
+  profilePic?: File | null;
+}
 
 export async function signupUser(data: SignupData) {
   try {
     let imageUrl = "";
 
-    if (data.profilePic ) {
+    if (data.profilePic) {
       const formData = new FormData();
-      formData.append("file", data.profilePic );
-      formData.append("upload_preset", "unsigned_preset");
-      formData.append("folder", "profile-image");
+      formData.append("file", data.profilePic);
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/detopi9nv/image/upload", {
+      // call backend route on  upload Cloudinary 
+      const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      const result = await res.json();
-      console.log("Cloudinary Upload Result:", result);
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.error) throw new Error(uploadResult.error.message);
 
-      imageUrl = result.secure_url;
+      imageUrl = uploadResult.secure_url;
     }
 
+    //  user data profilePic URL in  DB 
     const response = await axios.post("/api/auth/signup", {
       fullname: data.fullname,
       email: data.email,
       password: data.password,
       confirmPassword: data.confirmPassword,
-      profilePic : imageUrl,
+      profilePic: imageUrl,
     });
 
     return response.data;
@@ -44,6 +43,7 @@ export async function signupUser(data: SignupData) {
     throw error;
   }
 }
+
 
 
     
