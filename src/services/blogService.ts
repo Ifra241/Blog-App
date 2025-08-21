@@ -3,60 +3,48 @@ import { BlogProp } from "@/lib/models/Blog";
 export interface CreateBlogData {
   title: string;
   content: string;
-  author: string;
-  image?: File | null;
-    profilePic?: string;
+  authorId: string;
+  image: File;
+  category:string;
 }
 
 export async function createBlog(data: CreateBlogData): Promise<BlogProp> {
-  let imageUrl = "";
-  if (data.image) {
-    const formData = new FormData();
-    formData.append("file", data.image);
-    formData.append("upload_preset", "unsigned_preset");
-    formData.append("folder", "blog-images");
-    const res = await fetch("https://api.cloudinary.com/v1_1/detopi9nv/image/upload", {
-      method: "POST",
-      body: formData,
-    });
-    const result = await res.json();
-    if (!res.ok) {
-      throw new Error(result.error?.message || "Image upload failed");
-    }
-    imageUrl = result.secure_url;
+  // Upload image to Cloudinary first
+  const formData = new FormData();
+  formData.append("file", data.image);
+  formData.append("type", "blog");
+
+  const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+  const uploadResult = await uploadRes.json();
+
+  if (!uploadRes.ok) {
+    throw new Error(uploadResult.error || "Image upload failed");
   }
 
   const bodyToSend = {
     title: data.title,
     content: data.content,
-    author: data.author,
-    image: imageUrl,
-    profilePic: data.profilePic,
+    category:data.category,
+    author: data.authorId,
+    image: {
+    public_id: uploadResult.public_id,
+    folder: uploadResult.folder || "blog/images",
+    secure_url: uploadResult.secure_url, 
+  },
+    
   };
 
-  try {
-    const res = await fetch("/api/blogs", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyToSend),
-    });
-    if (!res.ok) {
-      const errorData = await res.json();
-      throw new Error(errorData.error || "Failed to create blog");
-    }
-    return res.json();
-  } catch {
-    throw new Error("Failed to create blog");
-  }
-}
+  const res = await fetch("/api/blogs", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(bodyToSend),
+  });
 
-export async function getBlog(): Promise<BlogProp> {
-  const res = await fetch("/api/blogs");
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Failed to fetch blogs");
+    console.error("Error data from /api/blogs:", errorData);
+    throw new Error(errorData.error || "Failed to create blog");
   }
+
   return res.json();
 }

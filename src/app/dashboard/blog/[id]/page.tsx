@@ -1,0 +1,118 @@
+import { connectToDatabase } from "@/lib/mongodb";
+import Blog from "@/lib/models/Blog";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import mongoose from "mongoose";
+import { FaHeart, FaComment, FaEye, FaBookmark } from "react-icons/fa";
+
+interface BlogPageProps {
+  params: { id: string };
+}
+
+interface PopulatedBlog {
+  _id: string;
+  title: string;
+  content: string;
+  image?: {
+    public_id: string;
+    folder: string;
+    secure_url: string;
+  };
+  author?: {
+    _id: string;
+    fullname: string;
+    profilePic?: string;
+  } | null;
+}
+
+export default async function BlogDetailPage({ params }: BlogPageProps) {
+  const { id } = params;
+  console.log("Blog ID:", id);
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return notFound();
+  }
+
+  try {
+    await connectToDatabase();
+
+    const blog = await Blog.findById(id)
+      .populate("author", "fullname profilePic")
+      .lean<PopulatedBlog>();
+
+    console.log("Fetched blog:", blog);
+
+    if (!blog) return notFound();
+
+    return (
+      <div className="max-w-3xl mx-auto mt-6 p-4 space-y-6">
+        {/* Blog Title */}
+        <h1 className="text-4xl font-bold">{blog.title}</h1>
+
+        {/* Blog Image */}
+        {blog.image?.secure_url ? (
+          <div className="relative w-full h-64 md:h-96 rounded overflow-hidden">
+            <Image
+              src={blog.image.secure_url}
+              alt={blog.title}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div className="w-full h-64 bg-gray-200 flex items-center justify-center text-gray-500">
+            No Image
+          </div>
+        )}
+
+        {/* Author + Icons */}
+        <div className="flex items-center justify-between text-gray-500 text-sm">
+          {/* Author */}
+          <div className="flex items-center gap-2">
+            {blog.author?.profilePic && (
+              <Image
+                src={blog.author.profilePic}
+                alt={blog.author.fullname}
+                width={30}
+                height={30}
+                className="rounded-full object-cover"
+              />
+            )}
+            <span>By {blog.author?.fullname || "Unknown Author"}</span>
+          </div>
+
+          {/*  Icons */}
+          <div className="flex items-center gap-4 text-gray-600">
+            <div className="flex items-center gap-1 cursor-pointer">
+              <FaHeart /> <span>24</span>
+            </div>
+            <div className="flex items-center gap-1 cursor-pointer">
+              <FaComment /> <span>12</span>
+            </div>
+            <div className="flex items-center gap-1 cursor-pointer">
+              <FaEye /> <span>300</span>
+            </div>
+            <div className="flex items-center gap-1 cursor-pointer">
+              <FaBookmark />
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        {/* Blog Content */}
+        <div
+          className="prose prose-lg max-w-full"
+          dangerouslySetInnerHTML={{ __html: blog.content }}
+        />
+      </div>
+    );
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    return (
+      <div className="max-w-3xl mx-auto mt-6 p-4">
+        <p className="text-red-500">Failed to load blog details.</p>
+      </div>
+    );
+  }
+}
