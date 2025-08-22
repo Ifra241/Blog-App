@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import mongoose from "mongoose";
 import { FaHeart, FaComment, FaEye, FaBookmark } from "react-icons/fa";
+import Link from "next/link";
 
 interface BlogPageProps {
   params: { id: string };
@@ -27,7 +28,6 @@ interface PopulatedBlog {
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
   const { id } = params;
-  console.log("Blog ID:", id);
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return notFound();
@@ -40,7 +40,6 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
       .populate("author", "fullname profilePic")
       .lean<PopulatedBlog>();
 
-    console.log("Fetched blog:", blog);
 
     if (!blog) return notFound();
 
@@ -68,6 +67,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         {/* Author + Icons */}
         <div className="flex items-center justify-between text-gray-500 text-sm">
           {/* Author */}
+          <Link href={"/profile"}>
           <div className="flex items-center gap-2">
             {blog.author?.profilePic && (
               <Image
@@ -80,6 +80,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
             )}
             <span>By {blog.author?.fullname || "Unknown Author"}</span>
           </div>
+          </Link>
 
           {/*  Icons */}
           <div className="flex items-center gap-4 text-gray-600">

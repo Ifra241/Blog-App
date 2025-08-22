@@ -5,12 +5,12 @@ import { UploadApiResponse } from "cloudinary";
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as Blob | null;
+    const file = formData.get("file") as Blob | null;//Blob stands for Binary Large Object,high-level object for files(like images,pdfs etc)
     const type = (formData.get("type") as string) || "blog";
 
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-    const arrayBuffer = await file.arrayBuffer();
+    const arrayBuffer = await file.arrayBuffer();//binary representation of the file,low-level, raw bytes of data stored in memory.
     const buffer = Buffer.from(arrayBuffer);
 
     const folder = type === "blog" ? "blog/images" : "user/profile";

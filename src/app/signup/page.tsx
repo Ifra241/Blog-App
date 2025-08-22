@@ -43,8 +43,9 @@ export default function SignupPage() {
 
       //  Save user info to Redux
       dispatch(setUser({
-        id: res.user.id,
+        _id: res.user._id,
         username: res.user.fullname,
+        fullname:res.user.fullname,
         email: res.user.email,
         profilePic: res.user.profilePic,
       }));

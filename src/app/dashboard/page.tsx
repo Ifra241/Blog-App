@@ -60,7 +60,7 @@ export default function Dashboard() {
         Failed to load blogs
       </p>
     );
-
+//Handle click 
   const handleClick = () => {
     if (currentUser) router.push("/createblog");
     else {
@@ -70,16 +70,17 @@ export default function Dashboard() {
       }, 1500);
     }
   };
-
-  const handleLogout = () => {
+//Logout
+  const handleLogout =async () => {
+    await fetch("/api/logout");
     if (!currentUser) {
-      alert("You are not logged in");
+      toast.message("You are not logged in",{position:"top-center"});
       return;
     }
     dispatch(logoutUser());
     router.push("/");
   };
-
+//Filterd Blog
   const filteredBlogs = blogs?.filter(blog =>
     selectedCategory === "All" ? true : blog.category === selectedCategory
   );
@@ -128,10 +129,9 @@ export default function Dashboard() {
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                {user?.username?.[0]?.toUpperCase() || "?"}
+                {user?.fullname?.[0]?.toUpperCase() || "?"}
               </div>
             )}
-            <span className="font-medium">{user?.username}</span>
           </Link>
 
           <Tooltip>
@@ -205,7 +205,7 @@ export default function Dashboard() {
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                      ?
+                      {blog.author?.fullname? blog.author.fullname[0].toLocaleUpperCase():"?"}
                     </div>
                   )}
                   <span className="text-sm text-gray-500">

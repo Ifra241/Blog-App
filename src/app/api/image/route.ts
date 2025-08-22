@@ -1,4 +1,4 @@
-import cloudinary from "@/lib/cloudinary";
+/*import cloudinary from "@/lib/cloudinary";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
@@ -13,8 +13,8 @@ export async function GET(req: Request) {
   const signedUrl = cloudinary.url(`${folder}/${public_id}`, {
     type: "private",
     sign_url: true,
-    expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 hour expiry
+    expires_at: Math.floor(Date.now() / 1000) + 3600, 
   });
 
   return NextResponse.json({ signedUrl });
-}
+}*/

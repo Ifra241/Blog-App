@@ -13,8 +13,10 @@ export async function signupUser(data: SignupData) {
     let imageUrl = "";
 
     if (data.profilePic) {
-      const formData = new FormData();
+      const formData = new FormData();//FormData is a special browser API used to send files/data to the server in the same way a <form> would.
       formData.append("file", data.profilePic);
+        formData.append("type", "user");
+
 
       // call backend route on  upload Cloudinary 
       const uploadRes = await fetch("/api/upload", {

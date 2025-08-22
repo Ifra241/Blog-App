@@ -8,10 +8,7 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const body = await req.json();
 
-    if (
-      !body.title ||
-      !body.content ||
-      !body.author ||
+    if (!body.title || !body.content || !body.author ||
       !body.image?.public_id ||
       !body.image?.folder
     ) {

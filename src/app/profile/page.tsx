@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { FaUserEdit } from "react-icons/fa";
 import { SlUserFollow } from "react-icons/sl";
-import { Blog, User } from "@/services/profileService";
+import { Blog,User } from "@/utils/Types";
 import { useState, useEffect } from "react";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -52,7 +52,7 @@ export default function ProfilePage() {
         <div className="flex flex-col md:flex-row w-full md:items-start justify-center md:justify-between gap-6 md:gap-16">
           {/* Profile Picture & Name */}
           <div className="flex flex-col items-center md:items-start">
-            {user.profilePic || user.fullname ? (
+            {user.profilePic || user.profilePic?.trim() !== ""? (
               <Image
                 src={user.profilePic ?? "/profile-placeholder.png"}
                 alt={user.fullname ?? "User profile picture"}
@@ -60,11 +60,17 @@ export default function ProfilePage() {
                 height={120}
                 className="rounded-full"
               />
-            ) : null}
+            ) :(
+              <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-3xl">
+    {user.fullname[0].toUpperCase()}
+  </div>
+            
+  )}
             <h1 className="mt-2 text-2xl font-bold text-center md:text-left">
               {user.fullname ?? "Unknown User"}
             </h1>
           </div>
+        
 
           {/* Stats */}
           <div className="flex flex-col items-center md:items-start gap-4 md:gap-4">
