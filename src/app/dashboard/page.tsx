@@ -118,7 +118,7 @@ export default function Dashboard() {
             </TooltipContent>
           </Tooltip>
 
-          <Link href="/profile" className="flex items-center gap-2">
+          <Link href={`/profile/${user?._id}`} className="flex items-center gap-2">
             {user?.profilePic ? (
               <Image
                 src={user.profilePic}

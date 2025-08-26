@@ -67,7 +67,7 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
         {/* Author + Icons */}
         <div className="flex items-center justify-between text-gray-500 text-sm">
           {/* Author */}
-          <Link href={"/profile"}>
+          <Link href={`/profile/${blog.author?._id}`}>
           <div className="flex items-center gap-2">
             {blog.author?.profilePic && (
               <Image

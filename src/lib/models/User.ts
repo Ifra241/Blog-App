@@ -1,4 +1,4 @@
-import { model, models, Schema,Document } from "mongoose";
+import { model, models, Schema,Document,Types } from "mongoose";
 
 export interface User extends Document{
 
@@ -8,8 +8,8 @@ export interface User extends Document{
     profilePic ?:string;
     authType:"email"|"google";
       createdAt: Date;
-      followers:string[];
-      following:string[];
+      followers:Types.ObjectId[];
+      following:Types.ObjectId[];
 
 }
 
@@ -43,14 +43,14 @@ const UserSchema=new Schema<User>({
          type: Date,
     default: Date.now,
     },
-    followers:{
-        type:[String],
-        default:[],
-    },
-    following:{
-        type:[String],
-        default:[],
-    }
+    followers:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }],
+    following:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }]
 });
 const User=models.User||model("User",UserSchema);
 export default User;

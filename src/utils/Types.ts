@@ -19,3 +19,4 @@ export interface Blog {
   createdAt: string;
   content: string;
 }
+

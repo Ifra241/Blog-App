@@ -11,6 +11,7 @@ import { Loader2 } from "lucide-react";
 
 
 
+
 export default function CreateBlog() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -148,12 +149,10 @@ export default function CreateBlog() {
       )}
 
       {/* Content */}
-      <textarea
-        placeholder="Tell your story..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="w-full min-h-[300px] sm:min-h-[400px] resize-none text-lg leading-relaxed placeholder-gray-300 focus:outline-none mt-4"
-      />
+       <textarea placeholder="Tell your story..." 
+       value={content} onChange={(e) => setContent(e.target.value)}
+       className="w-full min-h-[300px] sm:min-h-[400px] resize-none text-lg leading-relaxed placeholder-gray-300 focus:outline-none mt-4" />
+
 
       {/* Messages */}
       {error && <p className="text-red-500 font-semibold">{error}</p>}
