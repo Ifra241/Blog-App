@@ -11,6 +11,7 @@ import { loginUser } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Eye, EyeOff } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 
 
 export default function Signin() {
@@ -80,7 +81,7 @@ export default function Signin() {
 
             <Button
               type="submit"
-              className="w-full bg-blue-800 hover:bg-blue-700 font-semibold"
+              className="w-full bg-black hover:bg-blend-color-burn font-semibold"
             >
               Sign In
             </Button>
@@ -92,9 +93,9 @@ export default function Signin() {
             <Button
               variant="secondary"
               onClick={() => signIn("google")}
-              className="w-full bg-blue-600 text-white text-md hover:bg-blue-500"
+              className="w-full bg-transparent text-black text-md"
             >
-              Continue With Google
+              <FcGoogle  size={42}/>Continue With Google
             </Button>
 
             <p className="text-center mt-4">

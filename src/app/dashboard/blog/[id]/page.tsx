@@ -5,6 +5,7 @@ import Image from "next/image";
 import mongoose from "mongoose";
 import { FaHeart, FaComment, FaEye, FaBookmark } from "react-icons/fa";
 import Link from "next/link";
+import Header from "@/components/common/Header";
 
 interface BlogPageProps {
   params: { id: string };
@@ -44,7 +45,11 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
     if (!blog) return notFound();
 
     return (
-      <div className="max-w-3xl mx-auto mt-6 p-4 space-y-6">
+      <div>
+        {/* Header */}
+        <Header />
+
+          <div className="max-w-3xl mx-auto mt-6 p-4 space-y-6">
         {/* Blog Title */}
         <h1 className="text-4xl font-bold">{blog.title}</h1>
 
@@ -107,11 +112,13 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
           dangerouslySetInnerHTML={{ __html: blog.content }}
         />
       </div>
+      </div>
     );
   } catch (error) {
     console.error("Error fetching blog:", error);
     return (
       <div className="max-w-3xl mx-auto mt-6 p-4">
+         <Header />
         <p className="text-red-500">Failed to load blog details.</p>
       </div>
     );

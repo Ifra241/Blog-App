@@ -14,6 +14,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { setUser } from "@/store/userSlice";
+import { FcGoogle } from "react-icons/fc";
+
 
 export default function SignupPage() {
   const router = useRouter();
@@ -161,7 +163,7 @@ export default function SignupPage() {
 
             <Button
               type="submit"
-              className="w-full bg-blue-800 hover:bg-blue-700"
+             className="w-full bg-black hover:bg-blend-color-burn font-semibold"
               disabled={loading}
             >
               {loading ? "Signing up..." : "Sign Up"}
@@ -173,9 +175,10 @@ export default function SignupPage() {
                 type="button"
                 variant="secondary"
                 onClick={() => signIn("google")}
-                className="w-full bg-blue-600 text-white hover:bg-blue-500"
+                 className="w-full bg-transparent text-black text-md"
+
               >
-                Continue With Google
+                <FcGoogle  size={42}/>Continue With GoogleContinue With Google
               </Button>
             </div>
 

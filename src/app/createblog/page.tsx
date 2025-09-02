@@ -7,10 +7,8 @@ import { FiBell } from "react-icons/fi";
 import { FcAddImage } from "react-icons/fc";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Loader2 } from "lucide-react"; 
-
-
-
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import Image from "next/image";
 
 export default function CreateBlog() {
   const [title, setTitle] = useState("");
@@ -20,9 +18,9 @@ export default function CreateBlog() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
   function handleImage(e: React.ChangeEvent<HTMLInputElement>) {
@@ -93,7 +91,6 @@ export default function CreateBlog() {
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            {loading && <Loader2 className="animate-spin w-5 h-5" />}
             {loading ? "Publishing..." : "Publish"}
           </button>
 
@@ -129,7 +126,6 @@ export default function CreateBlog() {
           <FcAddImage size={36} />
         </button>
 
-        {/* Category dropdown inline */}
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -149,14 +145,78 @@ export default function CreateBlog() {
       )}
 
       {/* Content */}
-       <textarea placeholder="Tell your story..." 
-       value={content} onChange={(e) => setContent(e.target.value)}
-       className="w-full min-h-[300px] sm:min-h-[400px] resize-none text-lg leading-relaxed placeholder-gray-300 focus:outline-none mt-4" />
+      <textarea
+        placeholder="Tell your story..."
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full min-h-[300px] sm:min-h-[400px] resize-none text-lg leading-relaxed placeholder-gray-300 focus:outline-none mt-4"
+      />
 
+      {/* Preview Button  */}
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => setShowPreview(true)}
+          className="px-4 py-2 rounded-full font-semibold flex items-center gap-2 bg-green-400 text-white hover:bg-green-500"
+        >
+          Preview
+        </button>
+      </div>
 
       {/* Messages */}
       {error && <p className="text-red-500 font-semibold">{error}</p>}
       {success && <p className="text-green-400 font-semibold">{success}</p>}
+
+      {/* Scrollable Preview Modal */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-8xl w-full mx-4 p-6 space-y-6 max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="text-3xl text-center">{title}</DialogTitle>
+          </DialogHeader>
+
+          {category && (
+            <p className="text-gray-600 text-lg text-center">Category: {category}</p>
+          )}
+
+          {image && (
+            <div className="w-full max-w-md mx-auto relative h-96">
+  <Image
+    src={URL.createObjectURL(image)}
+    alt="Preview"
+    fill
+    style={{ objectFit: "cover", borderRadius: "0.5rem" }}
+  />
+</div>
+
+          )}
+
+          {content && (
+            <p className="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap text-center">
+              {content}
+            </p>
+          )}
+
+          <DialogFooter className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
+            <button
+              onClick={() => setShowPreview(false)}
+              className="px-8 py-2 rounded-full bg-gray-300 text-gray-700  hover:bg-gray-400"
+            >
+              Edit
+            </button>
+            <button
+              onClick={handlePublish}
+              disabled={!canPublish || loading}
+                          className={`px-4 py-2 rounded-full font-semibold ${
+
+                canPublish
+                  ? "bg-green-400 text-white hover:bg-green-500"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              {loading ? "Publishing..." : "Publish"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
