@@ -45,11 +45,6 @@ export async function signupUser(data: SignupData) {
     throw error;
   }
 }
-
-
-
-    
-
 interface LoginData{
     email:string;
     password:string;

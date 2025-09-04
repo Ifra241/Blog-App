@@ -4,7 +4,9 @@ import Link from "next/link";
 import useSWR from "swr";
 import { formatBlogDate } from "@/utils/formatDate";
 import Image from "next/image";
-import { FiMessageCircle, FiEye, FiHeart } from "react-icons/fi";
+import { FiMessageCircle,} from "react-icons/fi";
+import { FaEye, FaHeart } from "react-icons/fa";
+
 import { useState } from "react";
 import Header from "@/components/common/Header";
 
@@ -27,6 +29,8 @@ interface Blog {
     fullname?: string;
     profilePic?: string;
   } | null;
+  likes?:string[];
+  views:number;
 }
 
 const categories = ["All", "Technology", "Lifestyle", "Education", "Health"];
@@ -135,14 +139,18 @@ export default function Dashboard() {
                 {/* Comment, Views & Likes */}
                 <div className="flex items-center gap-4 mt-2">
                   <div className="flex items-center gap-1 text-gray-500">
+                   <FaHeart /> <span>{blog.likes?.length || 0}</span>
+
+
+                  </div>
+                  <div className="flex items-center gap-1 text-gray-500">
                     <FiMessageCircle /> <span>12</span>
                   </div>
                   <div className="flex items-center gap-1 text-gray-500">
-                    <FiEye /> <span>34</span>
+                                 <FaEye/><span>{blog.views || 0}</span>
+                 
                   </div>
-                  <div className="flex items-center gap-1 text-gray-500">
-                    <FiHeart /> <span>56</span>
-                  </div>
+                  
                 </div>
               </div>
             </div>

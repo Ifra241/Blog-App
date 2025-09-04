@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema, Types } from "mongoose";
 
 export interface BlogProp extends Document {
   title: string;
@@ -10,6 +10,8 @@ export interface BlogProp extends Document {
     secure_url: string;
   };
   author: mongoose.Schema.Types.ObjectId;
+  likes:Types.ObjectId[];
+  views:number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +33,12 @@ const BlogSchema: Schema<BlogProp> = new Schema(
       folder: { type: String, required: true },
       secure_url: { type: String, required: true },
     },
+    likes:[{
+      type:Schema.Types.ObjectId,
+      ref:"User",
+      default:[]
+    }],
+    views:{type:Number,default:0}
   },
   { timestamps: true }
 );

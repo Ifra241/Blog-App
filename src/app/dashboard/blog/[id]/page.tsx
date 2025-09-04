@@ -3,9 +3,11 @@ import Blog from "@/lib/models/Blog";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import mongoose from "mongoose";
-import { FaHeart, FaComment, FaEye, FaBookmark } from "react-icons/fa";
+import { FaComment, FaEye, FaBookmark } from "react-icons/fa";
 import Link from "next/link";
 import Header from "@/components/common/Header";
+import BlogLikeWrapper from "@/components/common/BlogLikeWrapper";
+import BlogViews from "@/components/common/BlogViews";
 
 interface BlogPageProps {
   params: { id: string };
@@ -25,6 +27,9 @@ interface PopulatedBlog {
     fullname: string;
     profilePic?: string;
   } | null;
+    likes?: string[];
+    views:number;
+
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
@@ -89,14 +94,17 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
           {/*  Icons */}
           <div className="flex items-center gap-4 text-gray-600">
-            <div className="flex items-center gap-1 cursor-pointer">
-              <FaHeart /> <span>24</span>
-            </div>
+            <BlogLikeWrapper blog={{_id:blog._id.toString(), likes:blog.likes?.map((id)=>id.toString())||[],
+            
+
+
+            }}/>
             <div className="flex items-center gap-1 cursor-pointer">
               <FaComment /> <span>12</span>
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
-              <FaEye /> <span>300</span>
+                <FaEye /> <BlogViews blogId={blog._id.toString()} initialViews={blog.views || 0} />
+
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
               <FaBookmark />
