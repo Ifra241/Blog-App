@@ -1,15 +1,17 @@
 import { FollowBody } from "@/app/api/users/follow/route"
 
-export const toggleFollow=async({targetUserId,currentUserId,action}:FollowBody)=>{
+export const toggleFollow=async({targetUserId,currentUserId,action,currentUserName}:FollowBody)=>{
 try{
 console.log("Follow API call:", { targetUserId, currentUserId, action });
 const res=await fetch("/api/users/follow",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({targetUserId,currentUserId,action})
+body:JSON.stringify({targetUserId,currentUserId,action,currentUserName})
 });
 const data=await res.json();
 if(!res.ok)throw new Error(data.message||"Error in follow");
+
+
 return data;
 }catch(error){
 console.error(error,"Error Occur ");

@@ -11,7 +11,7 @@ import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import { Blog, User } from "@/utils/Types";
 import Link from "next/link";
 import { toggleFollow } from "@/services/followService";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import { UserListDrawer } from "@/components/common/FollowersDrawer";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -35,6 +35,25 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
     profileId ? `/api/user/${profileId}/blogs` : null,
     fetcher
   );
+
+  // State for tabs
+  const [activeFilter, setActiveFilter] = useState<"blog" | "savedBlog">("blog");
+  const [savedBlogs, setSavedBlogs] = useState<Blog[]>([]); 
+
+  
+  // SWR for user's saved blogs (only fetch when tab is active)
+const { data: savedBlogsData} = useSWR<Blog[]>(
+  activeFilter === "savedBlog" && profileId ? `/api/blogs/savedBlogs?userId=${profileId}` : null,
+  fetcher
+);
+
+// Update state when data is fetched
+useEffect(() => {
+  if (savedBlogsData) {
+    setSavedBlogs(savedBlogsData);
+  }
+}, [savedBlogsData]);
+
 
   if (!profileId) return <p className="mt-20 text-center text-gray-600">Please login to view profile</p>;
   if (userError || blogsError) return <p className="mt-20 text-center text-red-500">Error loading profile</p>;
@@ -68,6 +87,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
       await toggleFollow({
         targetUserId: profileId,
         currentUserId: currentUser._id,
+            currentUserName: currentUser.fullname,
+            authorId: profileId,
         action,
       });
 
@@ -158,12 +179,31 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
         </div>
       </div>
 
+      
+        {/* Filter Tabs as Links */}
+<div className="flex gap-6 justify-center md:justify-start mt-12 mb-6 w-full max-w-5xl border-b border-gray-200">
+  <p
+    className={`cursor-pointer pb-2 text-lg font-medium ${activeFilter === "blog" ? "border-b-2 border-black text-black" : "text-gray-500"}`}
+    onClick={() => setActiveFilter("blog")}
+  >
+    Blog
+  </p>
+  <p
+    className={`cursor-pointer pb-2 text-lg font-medium ${activeFilter === "savedBlog" ? "border-b-2 border-black text-black" : "text-gray-500"}`}
+    onClick={() => setActiveFilter("savedBlog")}
+  >
+    SavedBlog
+  </p>
+</div>
+
+      
+
       {/* Blog Section */}
-      <div className="mt-12 w-full max-w-5xl flex flex-col gap-6">
-        {blogsCount === 0 ? (
+      <div className="mt-2 w-full max-w-5xl flex flex-col gap-6">
+        {(activeFilter === "blog" ? blogs : savedBlogs).length === 0 ? (
           <div className="flex flex-col items-center gap-4 mt-4">
             <p className="text-gray-500 text-center">No blogs yet</p>
-            {currentUser?._id === user._id && (
+            {currentUser?._id === user._id && activeFilter === "blog" && (
               <Link href="/createblog">
                 <button className="text-xl font-semibold px-6 py-2 rounded-full hover:bg-gray-100">
                   Create Blog
@@ -172,7 +212,7 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
             )}
           </div>
         ) : (
-          blogs.map(blog => (
+          (activeFilter === "blog" ? blogs : savedBlogs).map(blog => (
             <Link key={blog._id} href={`/dashboard/blog/${blog._id}`}>
               <Card className="overflow-hidden flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <CardContent className="flex-1 p-4 sm:p-6">

@@ -7,7 +7,7 @@ export interface CreateBlogData {
   image: File;
   category:string;
 }
-
+//CreateBlog
 export async function createBlog(data: CreateBlogData): Promise<BlogProp> {
   // Upload image to Cloudinary first
   const formData = new FormData();
@@ -47,4 +47,26 @@ export async function createBlog(data: CreateBlogData): Promise<BlogProp> {
   }
 
   return res.json();
+}
+//Save blog
+
+export async function saveBlog(userId:string,blogId:string){
+
+  try{
+
+    const res=await fetch("/api/blogs/saveBlog",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({userId,blogId}),
+    });
+    if(!res.ok){
+      const errorData=await res.json();
+      throw new Error(errorData.message || "Failed to save blog");
+    }
+    const data = await res.json();
+    return data.savedBlogs as string[];
+  } catch (err) {
+    console.error("Error toggling saved blog:",err);
+  }
+
 }

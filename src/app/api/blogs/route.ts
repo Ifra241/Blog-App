@@ -2,6 +2,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
+import User from "@/lib/models/User";
+import { createNotification } from "@/utils/notify";
 
 export async function POST(req: Request) {
   try {
@@ -34,6 +36,18 @@ export async function POST(req: Request) {
     }
       
     });
+
+    const currentUser=await User.findById(body.author);
+    if(currentUser&&currentUser.followers?.length>0){
+      const followers=await User.find({_id:{$in:currentUser.followers}});
+      for(const follower of followers){
+        await createNotification(
+          follower._id.toString(),
+          `${currentUser.fullname} posted a new blog`
+        );
+
+      }
+    }
 
     return NextResponse.json(newBlog, { status: 201 });
   } catch (err) {

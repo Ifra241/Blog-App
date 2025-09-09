@@ -9,11 +9,12 @@ import { FiHeart } from "react-icons/fi";
 interface LikeButtonProps {
   blogId: string;
   currentUserId: string;
+  currentUserName:string;
   initialLikes: number;
   userHasLiked: boolean;
 }
 export default function LikeButton({
-    blogId,currentUserId,initialLikes,userHasLiked}:LikeButtonProps){
+    blogId,currentUserId, currentUserName,initialLikes,userHasLiked}:LikeButtonProps){
         const[likesCount,setLikesCount]=useState(initialLikes);
         const[hasliked,setHasLiked]=useState(userHasLiked);
         const[loading ,setLoading]=useState(false);
@@ -24,7 +25,7 @@ export default function LikeButton({
             
             
         try{
-            const data=await toggleLike(blogId,currentUserId);
+            const data=await toggleLike(blogId,currentUserId,currentUserName);
             setLikesCount(data.likesCount);
             setHasLiked(data.message==="Liked");
 
@@ -39,7 +40,7 @@ return( <div
       className="flex items-center gap-1 cursor-pointer"
       onClick={handClick}
     >
-      {hasliked ? <FaHeart  size={24}/> : <FiHeart size={20} />}
+      {hasliked ? <FaHeart  size={24}/> : <FiHeart size={22} />}
       <span>{likesCount}</span>
     </div>
 

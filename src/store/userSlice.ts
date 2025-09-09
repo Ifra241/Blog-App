@@ -6,6 +6,7 @@ export interface User {
   email: string;
   profilePic?: string;
    fullname: string;
+     savedBlogs: string[];
 }
 
 interface UserState {
@@ -25,6 +26,13 @@ const userSlice = createSlice({
       state.currentUser = action.payload;
       localStorage.setItem("user",JSON.stringify(action.payload));
     },
+    updateSavedBlogs(state, action: PayloadAction<string[]>){
+      if(state.currentUser){
+        state.currentUser.savedBlogs=action.payload;
+              localStorage.setItem("user", JSON.stringify(state.currentUser));
+
+      }
+    },
     logoutUser:(state) =>{
       state.currentUser = null;
       localStorage.removeItem("user");
@@ -32,5 +40,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, logoutUser } = userSlice.actions;
+export const { setUser, logoutUser ,updateSavedBlogs} = userSlice.actions;
 export default userSlice.reducer;

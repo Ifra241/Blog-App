@@ -4,13 +4,14 @@ import { logoutUser } from "@/store/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import Image from "next/image";
-import { FiBell } from "react-icons/fi";
 import Link from "next/link";
 import { CiLogout } from "react-icons/ci";
 import { useRouter } from "next/navigation";
 import type { User as ReduxUser } from "@/store/userSlice";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
+import NotificationBell from "./NotificationBell";
+import { TfiWrite } from "react-icons/tfi";
 
 
 
@@ -69,20 +70,12 @@ export default function Header(){
         <div className="flex items-center gap-4 flex-wrap">
           <button
             onClick={handleClick}
-            className="text-xl font-semibold px-6 py-2 rounded-full hover:bg-gray-100"
+            className=" flex items-center text-xl font-semibold px-6 py-2 rounded-full hover:bg-gray-100"
           >
-            📝 Write
+            <TfiWrite /> Write
           </button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button className="p-2 rounded-full hover:bg-gray-100">
-                <FiBell size={28} color="darkblue" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" align="center">
-              Notification
-            </TooltipContent>
-          </Tooltip>
+        <NotificationBell userId={user?._id || ""} />
+
 
           <Link href={`/profile/${user?._id}`} className="flex items-center gap-2">
             {user?.profilePic ? (

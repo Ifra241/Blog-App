@@ -4,7 +4,6 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 
 export async function POST(
-  req: Request,
   { params }: { params: { blogId: string } }
 ) {
   try {
@@ -22,11 +21,15 @@ export async function POST(
     await connectToDatabase();
 
     // Increment views
+    console.log("blogId from params:", blogId);
     const blog = await Blog.findByIdAndUpdate(
+      
       blogId,
       { $inc: { views: 1 } },
       { new: true }
+      
     );
+    console.log("Updated blog:", blog);
 
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });

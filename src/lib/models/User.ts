@@ -6,14 +6,13 @@ export interface User extends Document{
     email:string;
     password?:string;
     profilePic ?:string;
+    bio?:string;
     authType:"email"|"google";
       createdAt: Date;
       followers:Types.ObjectId[];
       following:Types.ObjectId[];
-
+      savedBlogs:Types.ObjectId[];
 }
-
-
 
 const UserSchema=new Schema<User>({
     fullname:{
@@ -34,6 +33,10 @@ const UserSchema=new Schema<User>({
         type:String,
         default:"",
     },
+    bio:{
+        type:String,
+        default:"",
+    },
     authType:{
         type:String,
         enum:["email","google"],
@@ -50,7 +53,11 @@ const UserSchema=new Schema<User>({
     following:[{
         type:Schema.Types.ObjectId,
         ref:"User"
-    }]
+    }],
+    savedBlogs:[{
+        type:Schema.Types.ObjectId, 
+        ref:"Blog"
+    }],
 });
 const User=models.User||model("User",UserSchema);
 export default User;

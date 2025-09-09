@@ -2,18 +2,19 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import mongoose from "mongoose";
-import { FaComment, FaEye, FaBookmark } from "react-icons/fa";
+import mongoose, { Types } from "mongoose";
+import { FaComment, FaEye,} from "react-icons/fa";
 import Link from "next/link";
 import Header from "@/components/common/Header";
 import BlogLikeWrapper from "@/components/common/BlogLikeWrapper";
 import BlogViews from "@/components/common/BlogViews";
+import SaveBlogButton from "@/components/common/SaveButton";
 
 interface BlogPageProps {
   params: { id: string };
 }
 
-interface PopulatedBlog {
+ export interface PopulatedBlog {
   _id: string;
   title: string;
   content: string;
@@ -29,11 +30,12 @@ interface PopulatedBlog {
   } | null;
     likes?: string[];
     views:number;
+savedBy?: Types.ObjectId[];
 
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return notFound();
@@ -103,11 +105,12 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
               <FaComment /> <span>12</span>
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
-                <FaEye /> <BlogViews blogId={blog._id.toString()} initialViews={blog.views || 0} />
+                <FaEye size={22}/> <BlogViews blogId={blog._id.toString()} initialViews={blog.views || 0} />
 
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
-              <FaBookmark />
+              <SaveBlogButton blogId={blog._id.toString()}
+              savedBy={blog.savedBy?.map((id:Types.ObjectId)=>id.toString())||[]}/>
             </div>
           </div>
         </div>

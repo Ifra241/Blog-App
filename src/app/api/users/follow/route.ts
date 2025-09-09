@@ -1,5 +1,6 @@
 import User from "@/lib/models/User";
 import { connectToDatabase } from "@/lib/mongodb";
+import { createNotification } from "@/utils/notify";
 import { Types } from "mongoose";
 import { NextResponse } from "next/server";
 
@@ -7,13 +8,17 @@ import { NextResponse } from "next/server";
   targetUserId: string;
   currentUserId: string;
   action: "follow" | "unfollow";
+  authorId:string;
+  currentUserName:string;
+                      
+  
 
 }
 
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
-    const { targetUserId, currentUserId, action } = (await req.json()) as FollowBody;
+    const { targetUserId, currentUserId,currentUserName, action } = (await req.json()) as FollowBody;
 
     if (!targetUserId || !currentUserId) {
       return NextResponse.json({ message: "Missing User IDs" }, { status: 400 });
@@ -35,6 +40,11 @@ export async function POST(req: Request) {
       }
       if (!currentUser.following.some((id:Types.ObjectId) => id.equals(targetIdObj))) {
         currentUser.following.push(targetIdObj);
+        if(targetUser._id.toString()!== currentUserId){
+          await createNotification(
+            targetUserId, `${currentUserName} started following you`
+          );
+        }
       }
     } else if (action === "unfollow") {
       targetUser.followers = targetUser.followers.filter((id:Types.ObjectId) => !id.equals(currentIdObj));

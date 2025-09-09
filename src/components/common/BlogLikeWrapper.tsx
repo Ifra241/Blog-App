@@ -20,6 +20,7 @@ export default function BlogLikeWrapper({ blog }: BlogProps) {
     <LikeButton
       blogId={blog._id}
       currentUserId={currentUser._id} 
+       currentUserName={currentUser.fullname}
       initialLikes={blog.likes?.length || 0}
       userHasLiked={blog.likes?.includes(currentUser._id) || false}
     />
