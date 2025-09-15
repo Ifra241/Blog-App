@@ -6,19 +6,27 @@ import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { CiLogout } from "react-icons/ci";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { User as ReduxUser } from "@/store/userSlice";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip,TooltipTrigger } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import NotificationBell from "./NotificationBell";
 import { TfiWrite } from "react-icons/tfi";
+import { Input } from "../ui/input";
+import { IoSearch } from "react-icons/io5";
 
 
+interface HeaderProps {
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
+}
 
-
-export default function Header(){
+export default function Header({ searchQuery, setSearchQuery }: HeaderProps){
       const currentUser = useSelector((state: RootState) => state.user.currentUser);
         const [user, setUser] = useState<ReduxUser | null>(null);
+        const pathname=usePathname();
+        const isDashboard=pathname==="/dashboard"
+
       
     
     const dispatch = useDispatch();
@@ -55,13 +63,22 @@ export default function Header(){
 
 
                   {/* Logo */}
+                  <div className="flex items-center gap-4 flex-1">
+
                             <div className="text-2xl font-bold mt-2 ml-1">📚Blogger</div>
-    {/* Title */}
-    <div>
-      <h1 className="text-2xl font-bold mt-2 text-center md:text-left">
-   Create a unique and beautiful blog
-    </h1>
+    {/* Search Bar */}
+    {isDashboard && searchQuery !== undefined && setSearchQuery && (
+
+    <div className="relative flex-1 max-w-md mt-4">
+      <Input type="text" value={searchQuery} placeholder="Serach blogs..." onChange={(e)=>setSearchQuery(e.target.value)}
+       className="pl-10 pr-5 rounded-full border-gray-400"/>
+         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+<IoSearch size={24} /></span>
     </div>
+    )}
+</div>
+
+  
 
      {/* Action Buttons */}
 
@@ -74,7 +91,7 @@ export default function Header(){
           >
             <TfiWrite /> Write
           </button>
-        <NotificationBell userId={user?._id || ""} />
+        <NotificationBell userId={user?._id || ""}  />
 
 
           <Link href={`/profile/${user?._id}`} className="flex items-center gap-2">
@@ -96,12 +113,9 @@ export default function Header(){
           <Tooltip>
             <TooltipTrigger asChild>
               <button onClick={handleLogout} className="hover:bg-gray-200">
-                <CiLogout size={40} />
+                <CiLogout size={40}  title="LogOut"/>
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" align="center">
-              Logout
-            </TooltipContent>
           </Tooltip>
         </div>
       </nav>

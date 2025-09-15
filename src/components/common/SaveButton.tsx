@@ -9,14 +9,14 @@ import { updateSavedBlogs } from "@/store/userSlice";
 
 interface SaveBlogButtonProps {
   blogId: string;
+  savedBy?:string[];
 }
 
 export default function SaveBlogButton({ blogId }: SaveBlogButtonProps) {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch();
-  const [isSaved, setIsSaved] = useState<boolean | null>(null); // null = loading
+  const [isSaved, setIsSaved] = useState<boolean | null>(null); 
 
-  // Set isSaved based on currentUser.savedBlogs when currentUser is ready
   useEffect(() => {
     if (!currentUser) return;
     const savedBlogIds = currentUser.savedBlogs?.map(id => id.toString()) || [];
@@ -29,7 +29,6 @@ export default function SaveBlogButton({ blogId }: SaveBlogButtonProps) {
       const updatedSavedBlogs = await saveBlog(currentUser._id, blogId);
       if (!updatedSavedBlogs) return;
 
-      // update button display based on backend
       setIsSaved(updatedSavedBlogs.map(id => id.toString()).includes(blogId));
 
       // update Redux store
@@ -39,12 +38,11 @@ export default function SaveBlogButton({ blogId }: SaveBlogButtonProps) {
     }
   };
 
-  // Don't render button until we know saved status
   if (isSaved === null) return null;
 
   return (
     <div onClick={handleSave} style={{ cursor: "pointer" }}>
-      {isSaved ? <FaBookmark size={24} /> : <FaRegBookmark size={22} />}
+      {isSaved ? <FaBookmark size={24} /> : <FaRegBookmark size={22}  title="Save Blog"/>}
     </div>
   );
 }

@@ -3,12 +3,15 @@ import Blog from "@/lib/models/Blog";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import mongoose, { Types } from "mongoose";
-import { FaComment, FaEye,} from "react-icons/fa";
+import { FaEye,} from "react-icons/fa";
 import Link from "next/link";
 import Header from "@/components/common/Header";
 import BlogLikeWrapper from "@/components/common/BlogLikeWrapper";
 import BlogViews from "@/components/common/BlogViews";
 import SaveBlogButton from "@/components/common/SaveButton";
+import EditButton from "@/components/common/BlogEdit";
+import BlogCommentWrapper from "@/components/common/CommentWrapper";
+import DeleteButton from "@/components/common/BlogDelete";
 
 interface BlogPageProps {
   params: { id: string };
@@ -102,15 +105,24 @@ export default async function BlogDetailPage({ params }: BlogPageProps) {
 
             }}/>
             <div className="flex items-center gap-1 cursor-pointer">
-              <FaComment /> <span>12</span>
+  <BlogCommentWrapper blogId={blog._id.toString()} />
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
-                <FaEye size={22}/> <BlogViews blogId={blog._id.toString()} initialViews={blog.views || 0} />
+                <FaEye size={24}/> <BlogViews blogId={blog._id.toString()} initialViews={blog.views || 0} />
 
             </div>
             <div className="flex items-center gap-1 cursor-pointer">
               <SaveBlogButton blogId={blog._id.toString()}
               savedBy={blog.savedBy?.map((id:Types.ObjectId)=>id.toString())||[]}/>
+            </div>
+           <div className="flex items-center gap-1 cursor-pointer">
+              <EditButton
+               blogId={blog._id.toString()} 
+               authorId={blog.author?._id.toString()||""}/>
+            </div>
+            <div className="flex flex-center gap-1 cursor-pointer">
+              <DeleteButton blogId={blog._id.toString()} authorId={blog.author?._id.toString()||""}/>
+
             </div>
           </div>
         </div>

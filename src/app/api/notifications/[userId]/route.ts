@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function GET(req: Request, { params }: Props) {
-  const userId = params.userId; // now safe
+  const userId = params.userId;
 
   if (!userId) {
     return NextResponse.json({ message: "Missing userId" }, { status: 400 });

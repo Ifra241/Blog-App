@@ -36,7 +36,7 @@ export async function POST(
 // create Notification
 if(blog.author && blog.author.toString()!==userId){
   await createNotification(blog.author.toString(),
-   `${currentUserName} liked your blog`
+   `${currentUserName} liked your blog "${blog.title}"`
 );
 }
 

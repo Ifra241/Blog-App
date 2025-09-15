@@ -2,10 +2,8 @@
 
 import { toggleLike } from "@/services/likeService";
 import { useState } from "react";
-import { FaHeart } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
-
-
+import { FcLike } from "react-icons/fc";
 interface LikeButtonProps {
   blogId: string;
   currentUserId: string;
@@ -40,7 +38,7 @@ return( <div
       className="flex items-center gap-1 cursor-pointer"
       onClick={handClick}
     >
-      {hasliked ? <FaHeart  size={24}/> : <FiHeart size={22} />}
+      {hasliked ? <FcLike  size={28}/> : <FiHeart size={23} />}
       <span>{likesCount}</span>
     </div>
 

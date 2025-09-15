@@ -1,12 +1,10 @@
 "use client";
-
 import Link from "next/link";
 import useSWR from "swr";
 import { formatBlogDate } from "@/utils/formatDate";
 import Image from "next/image";
+import {  FaEye, FaHeart } from "react-icons/fa";
 import { FiMessageCircle,} from "react-icons/fi";
-import { FaEye, FaHeart } from "react-icons/fa";
-
 import { useState } from "react";
 import Header from "@/components/common/Header";
 
@@ -31,12 +29,16 @@ interface Blog {
   } | null;
   likes?:string[];
   views:number;
+  comments?:string[];
 }
 
 const categories = ["All", "Technology", "Lifestyle", "Education", "Health"];
 
+
 export default function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+    const [searchQuery, setSearchQuery] = useState(""); // <-- search state here
+
 
   
   const { data: blogs, error, isLoading } = useSWR<Blog[]>("/api/blogs", fetcher);
@@ -52,15 +54,27 @@ export default function Dashboard() {
     );
 
 //Filterd Blog
-  const filteredBlogs = blogs?.filter(blog =>
+  let filteredBlogs = blogs?.filter(blog =>
     selectedCategory === "All" ? true : blog.category === selectedCategory
   );
+  // Filter blogs by search query
+if (searchQuery.trim() !== "") {
+  filteredBlogs = filteredBlogs?.filter(blog =>
+    (blog.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (blog.content || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (blog.category || "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
+}
+
+
+
 
   return (
     <>
       {/* header */}
-      <Header/>
-      
+
+      <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
 
       {/* Centered Category Navbar */}
       <div className="flex justify-center gap-4 overflow-x-auto px-4 py-2 mb-6">
@@ -143,9 +157,8 @@ export default function Dashboard() {
 
 
                   </div>
-                  <div className="flex items-center gap-1 text-gray-500">
-                    <FiMessageCircle /> <span>12</span>
-                  </div>
+                 <FiMessageCircle className="text-gray-700 hover:text-gray-900" />
+                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200"></span>
                   <div className="flex items-center gap-1 text-gray-500">
                                  <FaEye/><span>{blog.views || 0}</span>
                  

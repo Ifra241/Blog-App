@@ -6,13 +6,15 @@ import useSWR, { mutate } from "swr";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { FaUserEdit } from "react-icons/fa";
 import { SlUserFollow, SlUserFollowing } from "react-icons/sl";
 import { Blog, User } from "@/utils/Types";
 import Link from "next/link";
 import { toggleFollow } from "@/services/followService";
 import { use, useEffect, useState } from "react";
 import { UserListDrawer } from "@/components/common/FollowersDrawer";
+import Header from "@/components/common/Header";
+import { EditProfileDialog } from "@/components/common/EditProfile";
+import { FaUserEdit } from "react-icons/fa";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -21,6 +23,7 @@ type UserItem = { _id: string; fullname: string; profilePic?: string };
 export default function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const profileId = id;
+const [openDialog, setOpenDialog] = useState(false);
 
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
@@ -105,12 +108,14 @@ useEffect(() => {
   const blogsCount = blogs?.length || 0;
 
   return (
+    <>
+    <Header/>
     <div className="flex flex-col items-center mt-16 px-4 sm:px-6 md:px-8">
       {/* Profile Header */}
       <div className="flex flex-col items-center w-full max-w-5xl bg-white rounded-xl shadow-md p-6 sm:p-8">
         <div className="flex flex-col md:flex-row w-full md:items-start justify-center md:justify-between gap-6 md:gap-16">
           {/* Profile Picture & Name */}
-          <div className="flex flex-col items-center md:items-start">
+          <div className="flex flex-col items-center md:items-start gap-2">
             {user.profilePic && user.profilePic.trim() !== "" ? (
               <Image
                 src={user.profilePic}
@@ -127,6 +132,7 @@ useEffect(() => {
             <h1 className="mt-2 text-2xl font-bold text-center md:text-left">
               {user.fullname ?? "Unknown User"}
             </h1>
+            <p className="text-center text-gray-600 max-w-[250px]">{user.bio}</p>
           </div>
 
           {/* Stats */}
@@ -160,9 +166,22 @@ useEffect(() => {
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mt-6 sm:mt-8 justify-center md:justify-start">
           {currentUser?._id === user._id ? (
-            <Button variant="outline" className="flex items-center gap-2">
-              <FaUserEdit /> Edit Profile
-            </Button>
+            <>
+      <Button
+        variant="outline"
+        className="flex items-center gap-2"
+        onClick={() => setOpenDialog(true)} // dialog open
+      >
+        <FaUserEdit /> Edit Profile
+      </Button>
+
+      {/*  Dialog use karte hue props pass karna */}
+      <EditProfileDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        user={user}
+      />
+    </>
           ) : (
             <Button
               variant="outline"
@@ -203,13 +222,6 @@ useEffect(() => {
         {(activeFilter === "blog" ? blogs : savedBlogs).length === 0 ? (
           <div className="flex flex-col items-center gap-4 mt-4">
             <p className="text-gray-500 text-center">No blogs yet</p>
-            {currentUser?._id === user._id && activeFilter === "blog" && (
-              <Link href="/createblog">
-                <button className="text-xl font-semibold px-6 py-2 rounded-full hover:bg-gray-100">
-                  Create Blog
-                </button>
-              </Link>
-            )}
           </div>
         ) : (
           (activeFilter === "blog" ? blogs : savedBlogs).map(blog => (
@@ -242,5 +254,6 @@ useEffect(() => {
         )}
       </div>
     </div>
+    </>
   );
 }

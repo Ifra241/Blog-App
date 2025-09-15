@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"; 
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 
 export async function POST(
+  req: Request,
   { params }: { params: { blogId: string } }
 ) {
   try {
@@ -23,12 +24,11 @@ export async function POST(
     // Increment views
     console.log("blogId from params:", blogId);
     const blog = await Blog.findByIdAndUpdate(
-      
       blogId,
       { $inc: { views: 1 } },
       { new: true }
-      
     );
+
     console.log("Updated blog:", blog);
 
     if (!blog) {

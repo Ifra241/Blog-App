@@ -1,5 +1,3 @@
-import axios from "axios";
-
 interface SignupData {
   fullname: string;
   email: string;
@@ -13,12 +11,11 @@ export async function signupUser(data: SignupData) {
     let imageUrl = "";
 
     if (data.profilePic) {
-      const formData = new FormData();//FormData is a special browser API used to send files/data to the server in the same way a <form> would.
+      const formData = new FormData();
       formData.append("file", data.profilePic);
-        formData.append("type", "user");
+      formData.append("type", "user");
 
-
-      // call backend route on  upload Cloudinary 
+      // call backend route on upload Cloudinary
       const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -30,37 +27,62 @@ export async function signupUser(data: SignupData) {
       imageUrl = uploadResult.secure_url;
     }
 
-    //  user data profilePic URL in  DB 
-    const response = await axios.post("/api/auth/signup", {
-      fullname: data.fullname,
-      email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-      profilePic: imageUrl,
+    // user data profilePic URL in DB
+    const signupRes = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        fullname: data.fullname,
+        email: data.email,
+        password: data.password,
+        confirmPassword: data.confirmPassword,
+        profilePic: imageUrl,
+      }),
     });
 
-    return response.data;
+    if (!signupRes.ok) {
+      const errorData = await signupRes.json();
+      throw new Error(errorData.message || "Signup failed");
+    }
+
+    return await signupRes.json();
   } catch (error) {
-    console.error("Signup Error", error);
+    console.error("Signup Error:", error);
     throw error;
   }
 }
-interface LoginData{
-    email:string;
-    password:string;
+
+interface LoginData {
+  email: string;
+  password: string;
 }
 
-export async function loginUser(data:LoginData){
-    try{
-        const res=await axios.post("/api/auth/login",data);
-                if(res.data.user){
-                  localStorage.setItem("user",JSON.stringify(res.data.user));
+export async function loginUser(data: LoginData) {
+  try {
+    const loginRes = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
 
-                }
-
-        return res.data;
-    }catch(error){
-        console.error("Login Error:",error);
-        throw error;
+    if (!loginRes.ok) {
+      const errorData = await loginRes.json();
+      throw new Error(errorData.message || "Login failed");
     }
+
+    const result = await loginRes.json();
+
+    if (result.user) {
+      localStorage.setItem("user", JSON.stringify(result.user));
+    }
+
+    return result;
+  } catch (error) {
+    console.error("Login Error:", error);
+    throw error;
+  }
 }
