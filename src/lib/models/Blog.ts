@@ -12,6 +12,9 @@ export interface BlogProp extends Document {
   author: mongoose.Schema.Types.ObjectId;
   likes:Types.ObjectId[];
   views:number;
+  viewsHistory: {
+    createdAt:Date;
+  }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -38,8 +41,14 @@ const BlogSchema: Schema<BlogProp> = new Schema(
       ref:"User",
       default:[]
     }],
-    views:{type:Number,default:0}
+    views:{type:Number,default:0},
+    viewsHistory: [
+      {
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
   },
+  
   { timestamps: true }
 );
 

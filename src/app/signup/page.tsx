@@ -53,7 +53,8 @@ export default function SignupPage() {
       }));
 
       toast.success(res.message || "Signup successful!");
-      router.push("/signin");
+      // After signup success
+router.push(`/otp-verification?email=${email}`);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -178,14 +179,14 @@ export default function SignupPage() {
                  className="w-full bg-transparent text-black text-md"
 
               >
-                <FcGoogle  size={42}/>Continue With GoogleContinue With Google
+                <FcGoogle  size={42}/>Continue With Google
               </Button>
             </div>
 
             <p className="mt-4 text-center">
               Already have an account?{" "}
               <Link href="/signin" className="text-blue-600 font-semibold">
-                SignIN
+                Sign In
               </Link>
             </p>
           </form>

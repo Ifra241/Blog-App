@@ -34,6 +34,10 @@ return true;
  console.error("Error saving Google user",error);
  return false;
     }
+ },
+ async redirect(){
+   return  "/dashboard";
+
  }
     }
 });

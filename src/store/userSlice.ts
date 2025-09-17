@@ -6,7 +6,7 @@ export interface User {
   email: string;
   profilePic?: string;
    fullname: string;
-     savedBlogs: string[];
+     savedBlogs?: string[];
 }
 
 interface UserState {

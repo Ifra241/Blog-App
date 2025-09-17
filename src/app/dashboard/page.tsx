@@ -4,7 +4,6 @@ import useSWR from "swr";
 import { formatBlogDate } from "@/utils/formatDate";
 import Image from "next/image";
 import {  FaEye, FaHeart } from "react-icons/fa";
-import { FiMessageCircle,} from "react-icons/fi";
 import { useState } from "react";
 import Header from "@/components/common/Header";
 
@@ -29,7 +28,6 @@ interface Blog {
   } | null;
   likes?:string[];
   views:number;
-  comments?:string[];
 }
 
 const categories = ["All", "Technology", "Lifestyle", "Education", "Health"];
@@ -157,8 +155,6 @@ if (searchQuery.trim() !== "") {
 
 
                   </div>
-                 <FiMessageCircle className="text-gray-700 hover:text-gray-900" />
-                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200"></span>
                   <div className="flex items-center gap-1 text-gray-500">
                                  <FaEye/><span>{blog.views || 0}</span>
                  

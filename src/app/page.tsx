@@ -14,10 +14,12 @@ export default function Home(){
      
 
         <nav className="flex justify-between items-center px-6 py-7">
+          <Link href="/dashboard">
           <div className="flex items-center space-x-2">
             <span className="text-2xl">📚</span>
             <h1 className="text-xl font-bold">Blogger</h1>
           </div>
+          </Link>
           <div>
             <Link
             href="/signup"
@@ -35,7 +37,7 @@ export default function Home(){
           <Button>
              <Link href="/signin">Create Your Blog</Link>
           </Button>
-
+          
         </section>
 
 

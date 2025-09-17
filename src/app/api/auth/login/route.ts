@@ -28,6 +28,11 @@ export async function POST(request:Request){
         if(!user){
             return NextResponse.json({message:"User Not Exist"},{status:401});
         }
+        //Check verified
+      //  if(!user.isVerified){
+     //return NextResponse.json({ message: "Please verify your email first" }, { status: 403 });}
+
+
         // Compare password
         const isMatch=await bcrypt.compare(password,user.password);
         if(!isMatch){

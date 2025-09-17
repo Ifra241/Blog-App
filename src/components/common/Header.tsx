@@ -65,7 +65,7 @@ export default function Header({ searchQuery, setSearchQuery }: HeaderProps){
                   {/* Logo */}
                   <div className="flex items-center gap-4 flex-1">
 
-                            <div className="text-2xl font-bold mt-2 ml-1">📚Blogger</div>
+                            <div className="text-2xl font-bold mt-2 ml-1"><Link href="/dashboard">📚Blogger</Link></div>
     {/* Search Bar */}
     {isDashboard && searchQuery !== undefined && setSearchQuery && (
 

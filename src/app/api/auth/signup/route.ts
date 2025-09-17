@@ -2,6 +2,7 @@ import User from "@/lib/models/User";
 import { connectToDatabase } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "@/utils/sendVerificationEmail";
 
 export async function POST(request: Request) {
   try {
@@ -21,16 +22,28 @@ export async function POST(request: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const verificationCode=Math.floor(100000+Math.random()*900000).toString();
+    const verificationCodeExpiry=new Date(Date.now()+15*60*1000);
+
     const newUser = new User({
       fullname,
       email,
       password: hashedPassword,
       profilePic: profilePic || "",
       authType: "email",
+      isVerified: false,
+      verificationCode,
+      verificationCodeExpiry,
       createdAt: new Date(),
     });
-
+console.log("Signup route called"); 
+console.log("Request body:", body);
     await newUser.save();
+    
+console.log("User saved:", newUser.email);
+    await sendVerificationEmail(email,verificationCode);
+    console.log("OTP for testing:", verificationCode);
+    console.log("OTP function called");
 
     return NextResponse.json(
       {

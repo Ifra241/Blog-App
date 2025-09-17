@@ -8,10 +8,14 @@ export interface User extends Document{
     profilePic ?:string;
     bio?:string;
     authType:"email"|"google";
-      createdAt: Date;
-      followers:Types.ObjectId[];
-      following:Types.ObjectId[];
-      savedBlogs:Types.ObjectId[];
+    createdAt: Date;
+    followers:Types.ObjectId[];
+    following:Types.ObjectId[];
+    savedBlogs:Types.ObjectId[];
+    isVerified:boolean;
+    verificationCode:string;
+    verificationCodeExpiry?: Date;
+
 }
 
 const UserSchema=new Schema<User>({
@@ -58,6 +62,16 @@ const UserSchema=new Schema<User>({
         type:Schema.Types.ObjectId, 
         ref:"Blog"
     }],
+    isVerified:{
+        type:Boolean,
+        default:false,
+    },
+    verificationCode:{
+        type:String,
+     },
+     verificationCodeExpiry:{
+        type:Date,
+     },
 });
 const User=models.User||model("User",UserSchema);
 export default User;

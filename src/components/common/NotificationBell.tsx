@@ -75,7 +75,7 @@ export default function NotificationBell({ userId }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button className="p-2 rounded-full hover:bg-gray-100 relative">
-          <FiBell size={28} color="darkblue" />
+          <FiBell size={28} />
           {unreadCount > 0 && (
             <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-red-500" />
           )}

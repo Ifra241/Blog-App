@@ -38,7 +38,10 @@ const [openDialog, setOpenDialog] = useState(false);
     profileId ? `/api/user/${profileId}/blogs` : null,
     fetcher
   );
+//SWR For total Views
 
+const{data:viewsData}=useSWR(profileId? `/api/blogs/author-view/${profileId}` :null, fetcher);
+const totalViews = viewsData?.totalViews || 0;
   // State for tabs
   const [activeFilter, setActiveFilter] = useState<"blog" | "savedBlog">("blog");
   const [savedBlogs, setSavedBlogs] = useState<Blog[]>([]); 
@@ -159,6 +162,12 @@ useEffect(() => {
                 <span className="text-sm font-semibold">Posts</span>
                 <span className="text-gray-500 text-xs">{blogsCount}</span>
               </div>
+              {/* Total Views */}
+<div className="flex flex-col items-center md:items-start gap-1">
+  <span className="text-sm font-semibold">Views</span>
+  <span className="text-gray-500 text-xs">{totalViews}</span>
+</div>
+
             </div>
           </div>
         </div>
@@ -211,7 +220,7 @@ useEffect(() => {
     className={`cursor-pointer pb-2 text-lg font-medium ${activeFilter === "savedBlog" ? "border-b-2 border-black text-black" : "text-gray-500"}`}
     onClick={() => setActiveFilter("savedBlog")}
   >
-    SavedBlog
+    Saved Blog
   </p>
 </div>
 

@@ -172,9 +172,9 @@ export default function CreateBlog() {
           onChange={handleImage}
           accept="image/*"
           style={{ display: "none" }}
-        />
+         />
         <button type="button" onClick={handleClick} className="flex items-center justify-center text-gray-600 hover:bg-gray-100 p-2">
-          <FcAddImage size={36} />
+          <FcAddImage size={36} title="Image uplod" />
         </button>
         <select value={category} onChange={(e) => setCategory(e.target.value)} className="bg-transparent text-gray-700 focus:outline-none">
           <option value="">Select category</option>
