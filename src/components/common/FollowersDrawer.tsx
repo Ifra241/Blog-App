@@ -24,7 +24,7 @@ export function UserListDrawer({  title,  description,  users,  count,}: UserLis
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
-        <button className=" flex flex-col items-center text-sm font-semibold">
+              <button className="flex flex-col items-center md:items-start gap-1 font-semibold">
           <span>{title}</span>
               <span className="text-gray-500 text-xs">{count}</span>
 

@@ -2,7 +2,6 @@ import { FollowBody } from "@/app/api/users/follow/route"
 
 export const toggleFollow=async({targetUserId,currentUserId,action,currentUserName}:FollowBody)=>{
 try{
-console.log("Follow API call:", { targetUserId, currentUserId, action });
 const res=await fetch("/api/users/follow",{
 method:"POST",
 headers:{"Content-Type":"application/json"},

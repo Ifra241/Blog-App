@@ -6,6 +6,7 @@ export interface User {
   profilePic?: string;
   followers: string[];
   following: string[];
+  
 }
 
 export interface Blog {

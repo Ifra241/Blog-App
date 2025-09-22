@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
         port:"",
         pathname:"/detopi9nv/**",
       },
+       {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com", 
+        port: "",
+        pathname: "/**", 
+      },
     ],
     
   },

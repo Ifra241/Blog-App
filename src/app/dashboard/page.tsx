@@ -6,6 +6,7 @@ import Image from "next/image";
 import {  FaEye, FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import Header from "@/components/common/Header";
+import Loader from "@/components/common/Loader";
 
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -35,7 +36,7 @@ const categories = ["All", "Technology", "Lifestyle", "Education", "Health"];
 
 export default function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState("All");
-    const [searchQuery, setSearchQuery] = useState(""); // <-- search state here
+    const [searchQuery, setSearchQuery] = useState(""); 
 
 
   
@@ -43,7 +44,7 @@ export default function Dashboard() {
 
   
   if (isLoading)
-    return <p className="font-bold mt-28 ml-6 text-xl">Loading Blogs...</p>;
+    return <span className="flex items-center justify-center h-screen"> <Loader /></span>;
   if (error)
     return (
       <p className="text-red-600 font-bold mt-28 ml-6 text-xl">
@@ -58,9 +59,7 @@ export default function Dashboard() {
   // Filter blogs by search query
 if (searchQuery.trim() !== "") {
   filteredBlogs = filteredBlogs?.filter(blog =>
-    (blog.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (blog.content || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (blog.category || "").toLowerCase().includes(searchQuery.toLowerCase())
+    (blog.title || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 }
 

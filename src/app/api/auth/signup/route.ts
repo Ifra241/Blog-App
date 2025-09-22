@@ -36,14 +36,9 @@ export async function POST(request: Request) {
       verificationCodeExpiry,
       createdAt: new Date(),
     });
-console.log("Signup route called"); 
-console.log("Request body:", body);
     await newUser.save();
     
-console.log("User saved:", newUser.email);
     await sendVerificationEmail(email,verificationCode);
-    console.log("OTP for testing:", verificationCode);
-    console.log("OTP function called");
 
     return NextResponse.json(
       {

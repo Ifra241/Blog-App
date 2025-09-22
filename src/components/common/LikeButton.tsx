@@ -33,7 +33,6 @@ export default function LikeButton({
       setLoading(false);
     }
 }
-
 return( <div
       className="flex items-center gap-1 cursor-pointer"
       onClick={handClick}

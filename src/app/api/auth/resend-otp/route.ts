@@ -7,7 +7,6 @@ export async function POST(req: Request) {
   try {
     const { email } = await req.json();
     if (!email) return NextResponse.json({ message: "Email is required" }, { status: 400 });
-
     await connectToDatabase();
     const user = await User.findOne({ email });
     if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });

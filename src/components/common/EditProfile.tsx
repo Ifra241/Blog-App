@@ -19,6 +19,7 @@ interface EditProfileDialogProps {
     fullname: string;
     bio?: string;
     profilePic?: string;
+     profilePicPublicId?: string;
   };
 }
 
@@ -32,44 +33,54 @@ export function EditProfileDialog({ open, onClose, user }: EditProfileDialogProp
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      let profilePicUrl = user.profilePic||"";
+  try {
+    //  Default (agar user image change nahi karta)
+    let profilePicData = {
+      secure_url: user.profilePic || "",
+      public_id: user.profilePicPublicId || "",
+    };
 
-      if (profilePic) {
-        const formData = new FormData();
-        formData.append("file", profilePic);
-        formData.append("type", "user");
+    //  If new image selected 
+    if (profilePic) {
+      const formData = new FormData();
+      formData.append("file", profilePic);
+      formData.append("type", "user");
 
-        const uploadRes = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-        });
+      const uploadRes = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-        const uploadResult = await uploadRes.json();
-        if (uploadResult.error) throw new Error(uploadResult.error.message);
-        profilePicUrl = uploadResult.secure_url;
+      const uploadResult = await uploadRes.json();
+      if (uploadResult.error) throw new Error(uploadResult.error.message);
 
-      }
-
-      const updatedUser=await updateProfile(user._id, {
-        fullname,
-        bio,
-      profilePic: profilePicUrl,      });
-
-mutate(`/api/user/${user._id}`);
-dispatch(setUser(updatedUser));
-      toast.success("Profile updated successfully");
-      onClose();
-    } catch (error) {
-      console.error(error);
-      toast.warning("Failed to update profile");
-    } finally {
-      setLoading(false);
+      profilePicData = {
+        secure_url: uploadResult.secure_url,
+        public_id: uploadResult.public_id,
+      };
     }
-  };
+
+    //  Send to backend
+    const updatedUser = await updateProfile(user._id, {
+      fullname,
+      bio,
+      profilePic: profilePicData,
+    });
+
+    mutate(`/api/user/${user._id}`);
+    dispatch(setUser(updatedUser));
+    toast.success("Profile updated successfully");
+    onClose();
+  } catch (error) {
+    console.error(error);
+    toast.warning("Failed to update profile");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

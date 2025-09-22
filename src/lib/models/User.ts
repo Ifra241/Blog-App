@@ -6,6 +6,7 @@ export interface User extends Document{
     email:string;
     password?:string;
     profilePic ?:string;
+    profilePicPublicId?: string;
     bio?:string;
     authType:"email"|"google";
     createdAt: Date;
@@ -37,6 +38,11 @@ const UserSchema=new Schema<User>({
         type:String,
         default:"",
     },
+     profilePicPublicId: {
+    type: String,
+    default: "",
+  },
+ 
     bio:{
         type:String,
         default:"",

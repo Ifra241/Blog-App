@@ -1,16 +1,17 @@
 "use client";
 
 import { BlogProp } from "@/lib/models/Blog";
-import { createBlog, CreateBlogData, updateBlog, getBlogById } from "@/services/blogService";
+import { createBlog, updateBlog, getBlogById } from "@/services/blogService";
 import React, { useRef, useState, useEffect } from "react";
 import { FcAddImage } from "react-icons/fc";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Blog } from "@/utils/Types";
+import Loader from "@/components/common/Loader";
 
 interface ImageData {
   public_id: string;
@@ -32,10 +33,13 @@ export default function CreateBlog() {
   const searchParams = useSearchParams();
   const blogId = searchParams.get("blogId");
 
+  const router=useRouter();
+
   // Prefill blog data when editing
   useEffect(() => {
     async function fetchBlog() {
       if (blogId) {
+        setLoading(true)
         try {
           const blog: BlogProp = await getBlogById(blogId);
           setTitle(blog.title);
@@ -44,6 +48,8 @@ export default function CreateBlog() {
           setImage(blog.image || null);
         } catch {
           toast.error("Failed to fetch blog");
+        }finally{
+          setLoading(false);
         }
       }
     }
@@ -66,73 +72,81 @@ export default function CreateBlog() {
   };
 
   const handlePublish = async () => {
-    if (!currentUser) return toast.message("You need to login");
-    if (!canPublish) return toast.message("All fields are required!");
+  if (!currentUser) return toast.message("You need to login");
+  if (!canPublish) return toast.message("All fields are required!");
 
-    setLoading(true);
-    setSuccess(null);
+  setLoading(true);
+  setSuccess(null);
 
-    try {
-      let finalImage: ImageData | undefined = undefined;
-      let oldPublicId: string | undefined = undefined;
+  try {
+    let finalImage: ImageData | undefined = undefined;
 
-      // If editing and existing image
-      if (blogId && image && !(image instanceof File)) {
-        finalImage = image;
-        oldPublicId = image.public_id;
-      }
-
-      // If new image uploaded
-      if (image instanceof File) {
-        const formData = new FormData();
-        formData.append("file", image);
-        formData.append("type", "blog");
-
-        const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
-        const uploadResult = await uploadRes.json();
-        if (!uploadRes.ok) throw new Error(uploadResult.error || "Image upload failed");
-
-        finalImage = {
-          public_id: uploadResult.public_id,
-          folder: uploadResult.folder || "blog/images",
-          secure_url: uploadResult.secure_url,
-        };
-      }
-
-      if (blogId) {
-        // Update blog
-        const updatedBlog: Blog = await updateBlog(blogId, {
-          title,
-          content,
-          category,
-          ...(finalImage ? { image: finalImage } : {}),
-          ...(oldPublicId ? { oldPublicId } : {}),
-        });
-        setSuccess(`Blog "${updatedBlog.title}" updated successfully!`);
-      } else {
-        // Create blog
-        if (!finalImage) throw new Error("Image is required for new blog");
-        const data: CreateBlogData = {
-          title,
-          content,
-          authorId: currentUser._id,
-          image: image as File,
-          category,
-        };
-        const newBlog: BlogProp = await createBlog(data);
-        setSuccess(`Blog "${newBlog.title}" published successfully!`);
-      }
-
-      setTitle("");
-      setContent("");
-      setCategory("");
-      setImage(null);
-    } catch (err) {
-      toast.error((err as Error).message || "Failed to publish blog");
-    } finally {
-      setLoading(false);
+    // If editing and existing image
+    if (blogId && image && !(image instanceof File)) {
+      finalImage = image;
     }
-  };
+
+    // If new image uploaded (for create or edit)
+    if (image instanceof File) {
+      const formData = new FormData();
+      formData.append("file", image);
+      formData.append("type", "blog");
+
+      const uploadRes = await fetch("/api/upload", { method: "POST", body: formData });
+      const uploadResult = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(uploadResult.error || "Image upload failed");
+
+      finalImage = {
+        public_id: uploadResult.public_id,
+        folder: uploadResult.folder || "blog/images",
+        secure_url: uploadResult.secure_url,
+      };
+    }
+
+    if (blogId) {
+      // Update blog
+      const updatedBlog: Blog = await updateBlog(blogId, {
+        title,
+        content,
+        category,
+        image: finalImage, // optional
+      });
+
+      setTitle(updatedBlog.title);
+      setContent(updatedBlog.content);
+      setCategory(updatedBlog.category);
+      setImage(updatedBlog.image || null);
+
+      setSuccess(`Blog "${updatedBlog.title}" updated successfully!`);
+      setTimeout(() => router.back(), 1500);
+
+    } else {
+      // Create blog
+      if (!finalImage) throw new Error("Image is required for new blog");
+
+      const newBlog: BlogProp = await createBlog({
+        title,
+        content,
+        authorId: currentUser._id,
+        category,
+        image: finalImage, 
+      });
+
+      setSuccess(`Blog "${newBlog.title}" published successfully!`);
+    }
+
+    // Reset
+    setTitle("");
+    setContent("");
+    setCategory("");
+    setImage(null);
+
+  } catch (err) {
+    toast.error((err as Error).message || "Failed to publish blog");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto p-5 sm:p-10 space-y-6 min-h-screen">
@@ -163,6 +177,9 @@ export default function CreateBlog() {
         onChange={(e) => setTitle(e.target.value)}
         className="text-3xl sm:text-5xl font-serif font-semibold placeholder-gray-300 focus:outline-none border-b-2 border-gray-300 pb-2 resize-none w-full"
       />
+        {loading &&<Loader/>}
+
+    
 
       {/* Image Upload + Category */}
       <div className="flex items-center gap-4 mt-2">
@@ -194,7 +211,6 @@ export default function CreateBlog() {
         onChange={(e) => setContent(e.target.value)}
         className="w-full min-h-[300px] sm:min-h-[400px] resize-none text-lg leading-relaxed placeholder-gray-300 focus:outline-none mt-4"
       />
-
       {/* Preview Button */}
       <div className="flex justify-end mt-4">
         <button

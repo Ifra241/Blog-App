@@ -14,8 +14,6 @@ export async function signupUser(data: SignupData) {
       const formData = new FormData();
       formData.append("file", data.profilePic);
       formData.append("type", "user");
-
-      // call backend route on upload Cloudinary
       const uploadRes = await fetch("/api/upload", {
         method: "POST",
         body: formData,

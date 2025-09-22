@@ -42,7 +42,10 @@ export async function POST(req: Request) {
         currentUser.following.push(targetIdObj);
         if(targetUser._id.toString()!== currentUserId){
           await createNotification(
-            targetUserId, `${currentUserName} started following you`
+            targetUserId, `${currentUserName} started following you`,
+                
+
+          
           );
         }
       }

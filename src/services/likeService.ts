@@ -10,8 +10,6 @@ export async function toggleLike(blogId: string, userId: string,currentUserName:
         });
        
         const data=await res.json();
-        console.log("toggleLike res:", res);
-console.log("toggleLike data:", data);
 
 
         if(!res.ok){

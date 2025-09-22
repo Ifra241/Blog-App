@@ -11,8 +11,7 @@ export default function BlogCommentWrapper({ blogId }: BlogCommentWrapperProps) 
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
   if (!currentUser) return null;
-
-  return (
+ return (
     <CommentDialog blogId={blogId} userId={currentUser._id} />
   );
 }

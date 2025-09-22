@@ -6,7 +6,6 @@ if(!MONGODB_URI){
     throw new  Error("Please define the MONGODB_URL in .env.local");
 }
 
-
 interface MongooseCache{
     con:typeof mongoose|null;
     promise:Promise<typeof mongoose>|null;
@@ -15,7 +14,7 @@ interface MongooseCache{
 declare global{
     var mongooseCache:MongooseCache|undefined;
 }
-const globalForMongoose=globalThis as typeof globalThis &{ //global this store and acces value
+const globalForMongoose=globalThis as typeof globalThis &{
     mongooseCache:MongooseCache
 };
 const cached:MongooseCache=globalForMongoose.mongooseCache ??{

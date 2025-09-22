@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 import { createNotification } from "@/utils/notify";
 import User from "@/lib/models/User";
+import { Types } from "mongoose";
 
 export async function POST(req: Request) {
   try {
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
     const blog=await Blog.findById(blogId);
     if(blog?.author && blog.author.toString()!==userId){
       const message=`${currentUserName} commented on your blog "${blog.title}"`;
-      await createNotification(blog.author.toString(), message);
+  await createNotification(blog.author.toString(), message, (blog._id as Types.ObjectId).toString() );      
     }
   
 

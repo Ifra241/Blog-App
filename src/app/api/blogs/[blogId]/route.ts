@@ -30,30 +30,43 @@ export async function GET(req:NextRequest,{params}:{params:{blogId:string}}){
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params:{ blogId: string } } 
+  { params }: { params: { blogId: string } }
 ) {
-  const  blogId  =  params.blogId; 
-  const { title, content, image, category, oldPublicId } = await req.json();
+  try {
+    await connectToDatabase();
+    const blogId = params.blogId;
+    const { title, content, category, image } = await req.json();
 
-  if (image && oldPublicId) {
-    try {
-      await cloudinary.uploader.destroy(oldPublicId);
-    } catch (err) {
-      console.error("Cloudinary delete failed:", err);
+    const blog = await Blog.findById(blogId);
+    if (!blog) return NextResponse.json({ message: "Blog Not found" }, { status: 404 });
+
+    // Delete old image if new image uploaded
+    if (image && blog.image?.public_id && image.public_id !== blog.image.public_id) {
+      try {
+        await cloudinary.uploader.destroy(blog.image.public_id);
+      } catch (err) {
+        console.error("Cloudinary delete failed:", err);
+      }
     }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        title,
+        content,
+        category,
+        ...(image ? { image } : {}),
+      },
+      { new: true }
+    );
+
+    return NextResponse.json(updatedBlog, { status: 200 });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }
-
-  const updatedBlog = await Blog.findByIdAndUpdate(
-    blogId,
-    { title, content, category, ...(image ? { image } : {}) },
-    { new: true }
-  );
-
-  if (!updatedBlog)
-    return NextResponse.json({ message: "Blog Not found" }, { status: 404 });
-
-  return NextResponse.json(updatedBlog, { status: 200 });
 }
+
 
 //Delete Blog
 

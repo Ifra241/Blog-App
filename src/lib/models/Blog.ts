@@ -24,9 +24,14 @@ delete mongoose.models.Blog;
 
 const BlogSchema: Schema<BlogProp> = new Schema(
   {
-    title: { type: String, required: true, trim: true },
-    content: { type: String, required: true },
-    author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    title: { type: String, 
+      required: true,
+       trim: true },
+    content: { type: String,
+       required: true },
+    author: { type: Schema.Types.ObjectId,
+       ref: "User",
+        required: true },
     category:{
       type:String,
       required:true,

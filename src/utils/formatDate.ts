@@ -4,8 +4,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-
-
 export function formatBlogDate(dateInput: string|Date|number|Dayjs){
     const now=dayjs();
     const date=dayjs(dateInput);

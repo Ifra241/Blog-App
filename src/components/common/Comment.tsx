@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatBlogDate } from "@/utils/formatDate";
 import { FaRegComment } from "react-icons/fa";
+import Loader from "./Loader";
 
 interface CommentDialogProps {
   blogId: string;
@@ -100,7 +101,7 @@ export default function CommentDialog({
         </DrawerHeader>
 
         <div className="flex-1 overflow-y-auto space-y-3 mb-4">
-          {isLoading && <p className="text-gray-500">Loading comments...</p>}
+          {isLoading && <div className="flex items-center justify-center h-screen"><Loader/></div>}
           {isError && <p className="text-red-500">Failed to load comments.</p>}
           {!isLoading && comments?.length === 0 && <p className="text-gray-500">No comments yet.</p>}
 

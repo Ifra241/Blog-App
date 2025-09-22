@@ -5,7 +5,7 @@ import { UploadApiResponse } from "cloudinary";
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as Blob | null;//Blob stands for Binary Large Object,high-level object for files(like images,pdfs etc)
+    const file = formData.get("file") as Blob | null;
     const type = (formData.get("type") as string) || "blog";
 
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });

@@ -8,7 +8,7 @@ interface Props {
 }
 
 export async function GET(req: Request, { params }: Props) {
-  const {userId} = await params;
+  const { userId } = params;
 
   if (!userId) {
     return NextResponse.json({ message: "Missing userId" }, { status: 400 });
@@ -17,12 +17,19 @@ export async function GET(req: Request, { params }: Props) {
   try {
     await connectToDatabase();
 
-    // Convert to ObjectId if needed
     const objectId = new mongoose.Types.ObjectId(userId);
 
-    const notifications = await Notification.find({ user: objectId }).sort({ createdAt: -1 });
+    const notifications = await Notification.find({ user: objectId })
+      .sort({ createdAt: -1 })
+      .lean(); 
+ 
 
-    return NextResponse.json(notifications);
+    const notificationsWithBlogId = notifications.map(n => ({
+      ...n,
+      blogId: n.blogId ? n.blogId.toString() : undefined
+    }));
+
+    return NextResponse.json(notificationsWithBlogId);
   } catch (err) {
     console.error("Error fetching notifications:", err);
     return NextResponse.json({ message: "Failed to fetch notifications" }, { status: 500 });

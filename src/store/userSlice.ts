@@ -7,6 +7,7 @@ export interface User {
   profilePic?: string;
    fullname: string;
      savedBlogs?: string[];
+       authType: "email" | "google";
 }
 
 interface UserState {

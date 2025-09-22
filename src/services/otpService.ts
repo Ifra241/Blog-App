@@ -1,3 +1,4 @@
+//OTP Verify
 export async function verifyOtp(email: string, otp: string) {
   try {
     const res = await fetch("/api/auth/verify-otp", {

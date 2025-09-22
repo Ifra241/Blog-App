@@ -2,7 +2,10 @@
 export interface UpdateProfileData {
   fullname?: string;
   bio?: string;
-  profilePic?:string;
+  profilePic?: {
+    secure_url: string;
+    public_id: string;
+  };
 }
 
 export async function updateProfile(userId: string, data: UpdateProfileData) {

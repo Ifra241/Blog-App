@@ -28,7 +28,6 @@ export async function POST(req:NextRequest){
     if(user.verificationCodeExpiry<new Date()){
         return NextResponse.json({ message: "OTP expired" }, { status: 400 });
     }
-    // OTP valid → mark user as verified
     user.isVerified=true;
     user.verificationCode=undefined; // remove OTP
     user.verificationCodeExpiry=undefined;// remove expiry

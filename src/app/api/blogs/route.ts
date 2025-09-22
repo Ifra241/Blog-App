@@ -43,7 +43,8 @@ export async function POST(req: Request) {
       for(const follower of followers){
         await createNotification(
           follower._id.toString(),
-          `${currentUser.fullname} posted a new blog`
+          `${currentUser.fullname} posted a new blog`,
+          
         );
 
       }

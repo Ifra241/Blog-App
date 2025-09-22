@@ -50,6 +50,7 @@ export default function SignupPage() {
         fullname:res.user.fullname,
         email: res.user.email,
         profilePic: res.user.profilePic,
+         authType: res.user.authType,
       }));
 
       toast.success(res.message || "Signup successful!");

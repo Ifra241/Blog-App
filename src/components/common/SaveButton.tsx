@@ -11,7 +11,6 @@ interface SaveBlogButtonProps {
   blogId: string;
   savedBy?:string[];
 }
-
 export default function SaveBlogButton({ blogId }: SaveBlogButtonProps) {
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
   const dispatch = useDispatch();

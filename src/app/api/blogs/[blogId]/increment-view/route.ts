@@ -22,14 +22,17 @@ export async function POST(
     await connectToDatabase();
 
     // Increment views
-    console.log("blogId from params:", blogId);
     const blog = await Blog.findByIdAndUpdate(
       blogId,
-      { $inc: { views: 1 } },
+      { 
+        $inc: { views: 1 } ,
+         $push: { viewsHistory: { createdAt: new Date() } }
+    
+    },
+      
       { new: true }
     );
 
-    console.log("Updated blog:", blog);
 
     if (!blog) {
       return NextResponse.json({ message: "Blog not found" }, { status: 404 });

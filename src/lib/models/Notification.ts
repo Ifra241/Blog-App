@@ -6,6 +6,7 @@ export interface Notification extends Document{
     message:string;
     read:boolean;
     createdAt:Date;
+    blogId:Types.ObjectId;
 }
 
 const NotificationSchema=new Schema<Notification>({
@@ -22,6 +23,7 @@ const NotificationSchema=new Schema<Notification>({
     type:Boolean,
     default:false,
   },
+  blogId: { type:Schema.Types.ObjectId, ref: "Blog" },
   createdAt:{
      type: Date, 
      default: Date.now 

@@ -59,8 +59,7 @@ export default function OtpVerification() {
         Code not received?{" "}
         <span
           onClick={handleResendClick}
-          className="text-blue-600 font-semibold cursor-pointer hover:underline"
-        >
+          className="text-blue-600 font-semibold cursor-pointer hover:underline">
           Resend
         </span>
       </p>

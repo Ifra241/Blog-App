@@ -1,7 +1,6 @@
 import nodemailer from "nodemailer";
 
 export const sendVerificationEmail = async (to: string, code: string) => {
-  console.log("Sending OTP to:", to, "Code:", code);
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -12,13 +11,12 @@ export const sendVerificationEmail = async (to: string, code: string) => {
   });
 
   try {
-    const info = await transporter.sendMail({
+     await transporter.sendMail({
      from: `"BlogApp" <${process.env.EMAIL_USER}>`,
       to,
       subject: "Verify your account",
       text: `Your verification code is ${code}. It will expire in 15 minutes.`,
     });
-    console.log("Email sent successfully:", info.response); 
   } catch (err) {
     console.error("OTP sending failed:", err); 
   }

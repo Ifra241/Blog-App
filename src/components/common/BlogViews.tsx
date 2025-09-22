@@ -34,7 +34,6 @@ export default function BlogViews({ blogId, initialViews }: Props) {
     }
   }, [blogId]);
 
-  console.log("incrementing view for blogId:", blogId);
 
   return <span>{views}</span>;
 }

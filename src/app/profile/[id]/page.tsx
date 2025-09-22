@@ -15,6 +15,8 @@ import { UserListDrawer } from "@/components/common/FollowersDrawer";
 import Header from "@/components/common/Header";
 import { EditProfileDialog } from "@/components/common/EditProfile";
 import { FaUserEdit } from "react-icons/fa";
+import Loader from "@/components/common/Loader";
+import ViewsChart from "@/components/common/ViewGraph";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -24,6 +26,8 @@ export default function ProfilePage({ params }: { params: Promise<{ id: string }
   const { id } = use(params);
   const profileId = id;
 const [openDialog, setOpenDialog] = useState(false);
+const [showViewsChart, setShowViewsChart] = useState(false);
+
 
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
@@ -63,7 +67,7 @@ useEffect(() => {
 
   if (!profileId) return <p className="mt-20 text-center text-gray-600">Please login to view profile</p>;
   if (userError || blogsError) return <p className="mt-20 text-center text-red-500">Error loading profile</p>;
-  if (!user || !blogs) return <p className="mt-20 text-center text-gray-600">Loading...</p>;
+  if (!user || !blogs) return <div className="flex items-center justify-center h-screen"><Loader/></div>;
 
   // Convert followers/following to proper objects for Drawer
   type Follower = string | { _id: string; fullname?: string; profilePic?: string };
@@ -115,97 +119,106 @@ useEffect(() => {
     <Header/>
     <div className="flex flex-col items-center mt-16 px-4 sm:px-6 md:px-8">
       {/* Profile Header */}
-      <div className="flex flex-col items-center w-full max-w-5xl bg-white rounded-xl shadow-md p-6 sm:p-8">
-        <div className="flex flex-col md:flex-row w-full md:items-start justify-center md:justify-between gap-6 md:gap-16">
-          {/* Profile Picture & Name */}
-          <div className="flex flex-col items-center md:items-start gap-2">
-            {user.profilePic && user.profilePic.trim() !== "" ? (
-              <Image
-                src={user.profilePic}
-                alt={user.fullname ?? "User profile picture"}
-                width={120}
-                height={120}
-                className="rounded-full"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-3xl">
-                {user.fullname[0].toUpperCase()}
-              </div>
-            )}
-            <h1 className="mt-2 text-2xl font-bold text-center md:text-left">
-              {user.fullname ?? "Unknown User"}
-            </h1>
-            <p className="text-center text-gray-600 max-w-[250px]">{user.bio}</p>
-          </div>
+     <div className="flex flex-col items-center w-full max-w-5xl bg-white rounded-xl shadow-md p-6 sm:p-8">
+  <div className="flex flex-col md:flex-row w-full md:items-start justify-between">
+    {/* Profile Picture & Name */}
+    <div className="flex flex-col items-center md:items-start">
+      {user.profilePic && user.profilePic.trim() !== "" ? (
+        <Image
+          src={user.profilePic}
+          alt={user.fullname ?? "User profile picture"}
+          width={120}
+          height={120}
+          className="rounded-full"
+        />
+      ) : (
+        <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-gray-700 text-3xl">
+          {user?.fullname?.[0]?.toUpperCase() ?? "?"}
+        </div>
+      )}
+      <h1 className="mt-2 text-2xl font-bold text-center md:text-left">
+        {user.fullname ?? "Unknown User"}
+      </h1>
+      <p className="text-center md:text-left text-gray-600 max-w-[250px]">{user.bio}</p>
+    </div>
 
-          {/* Stats */}
-          <div className="flex flex-col items-center md:items-start gap-4 md:gap-4">
-            <div className="flex flex-wrap gap-6 justify-center md:justify-start">
-              {/* Followers Drawer Trigger */}
-              <UserListDrawer
-                title="Followers"
-                description="List of users following this profile"
-                users={followersList}
-                count={followersCount}
-              />
+    {/* Stats */}
+    <div className="flex flex-col items-center md:items-start">
+      <div className="flex gap-8 flex-wrap justify-center md:justify-start">
+        {/* Followers */}
+        <UserListDrawer
+          title="Followers"
+          description="List of users following this profile"
+          users={followersList}
+          count={followersCount}
+        />
 
-              {/* Following Drawer Trigger */}
-              <UserListDrawer
-                title="Following"
-                description="List of users this profile is following"
-                users={followingList}
-                count={followingCount}
-              />
+        {/* Following */}
+        <UserListDrawer
+          title="Following"
+          description="List of users this profile is following"
+          users={followingList}
+          count={followingCount}
+        />
 
-              {/* Posts count */}
-              <div className="flex flex-col items-center md:items-start gap-1">
-                <span className="text-sm font-semibold">Posts</span>
-                <span className="text-gray-500 text-xs">{blogsCount}</span>
-              </div>
-              {/* Total Views */}
-<div className="flex flex-col items-center md:items-start gap-1">
-  <span className="text-sm font-semibold">Views</span>
-  <span className="text-gray-500 text-xs">{totalViews}</span>
-</div>
-
-            </div>
-          </div>
+        {/* Posts */}
+        <div className="flex flex-col items-center gap-1">
+          <span className="text-sm font-semibold">Posts</span>
+          <span className="text-gray-600 text-xs">{blogsCount}</span>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-6 sm:mt-8 justify-center md:justify-start">
-          {currentUser?._id === user._id ? (
-            <>
+        {/* Views */}
+        <div className="flex flex-col items-center gap-1" onClick={()=>setShowViewsChart(prev=>!prev)}>
+          <span className="text-sm font-semibold cursor-pointer">Views</span>
+          <span className="text-gray-600 text-xs">{totalViews}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Action Buttons */}
+  <div className="flex flex-col sm:flex-row gap-4 mt-6 sm:mt-8 justify-center md:justify-start">
+    {currentUser?._id === user._id ? (
+      <>
+        <Button
+          variant="outline"
+          className="flex items-center gap-2"
+          onClick={() => setOpenDialog(true)}
+        >
+          <FaUserEdit /> Edit Profile
+        </Button>
+
+        <EditProfileDialog
+          open={openDialog}
+          onClose={() => setOpenDialog(false)}
+          user={user}
+        />
+      </>
+    ) : (
       <Button
         variant="outline"
         className="flex items-center gap-2"
-        onClick={() => setOpenDialog(true)} // dialog open
+        onClick={handleFollowToggle}
       >
-        <FaUserEdit /> Edit Profile
+        {isFollowing ? (
+          <>
+            <SlUserFollowing /> Following
+          </>
+        ) : (
+          <>
+            <SlUserFollow /> Follow
+          </>
+        )}
       </Button>
+    )}
+  </div>
+</div>
+{showViewsChart && (
+  <div className="w-full max-w-5xl mt-4">
+    <ViewsChart authorId={user._id.toString()} title="Views Graph" />
+  </div>
+)}
 
-      {/*  Dialog use karte hue props pass karna */}
-      <EditProfileDialog
-        open={openDialog}
-        onClose={() => setOpenDialog(false)}
-        user={user}
-      />
-    </>
-          ) : (
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-              onClick={handleFollowToggle}
-            >
-              {isFollowing ? (
-                <><SlUserFollowing /> Following</>
-              ) : (
-                <><SlUserFollow /> Follow</>
-              )}
-            </Button>
-          )}
-        </div>
-      </div>
 
       
         {/* Filter Tabs as Links */}

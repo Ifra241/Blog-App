@@ -8,8 +8,7 @@ export async function GET(
 ) {
   try {
     await connectToDatabase();
-
-    const { userId } = params;
+     const { userId } = params;
 
     // Populate followers and following with only fullname and profilePic
     const user = await User.findById(userId)

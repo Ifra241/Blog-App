@@ -32,13 +32,17 @@ export async function POST(
       );
     } else {
       blog.likes.push(new Types.ObjectId(userId));
-    }
+    
 // create Notification
 if(blog.author && blog.author.toString()!==userId){
   await createNotification(blog.author.toString(),
-   `${currentUserName} liked your blog "${blog.title}"`
+   `${currentUserName} liked your blog "${blog.title}"`,
+   params.blogId
 );
 }
+}
+ 
+  
 
  
 await blog.save({ validateBeforeSave: false });

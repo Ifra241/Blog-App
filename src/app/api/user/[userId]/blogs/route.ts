@@ -2,6 +2,8 @@ import Blog from "@/lib/models/Blog";
 import { connectToDatabase } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+//get blog
+
 export async function GET(
   req: Request,
   { params }: { params: { userId: string } }

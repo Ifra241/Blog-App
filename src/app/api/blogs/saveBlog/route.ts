@@ -35,10 +35,11 @@ export async function POST(req: NextRequest) {
 
     if (!isSaved) {
       user.savedBlogs.push(blogId); // Save
-
+//Create Notification
       if(blog?.author &&blog.author._id.toString()!==userId){
         await createNotification(blog.author._id.toString(),
-         `${user.fullname} saved your blog`
+         `${user.fullname} saved your blog`,
+         blogId
       );
       }
 

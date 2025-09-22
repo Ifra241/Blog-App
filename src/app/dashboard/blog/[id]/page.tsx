@@ -38,7 +38,7 @@ savedBy?: Types.ObjectId[];
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const { id } = await params;
+  const { id } =  params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return notFound();

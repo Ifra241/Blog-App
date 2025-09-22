@@ -29,7 +29,7 @@ export async function GET(req: NextRequest, { params }: { params: { authorId: st
       { $group: { _id: "$author", totalViews: { $sum: "$views" } } },
     ]);
 
-    // Last Week Views (day-wise)
+    // Last Week Views 
     const weekResult = await Blog.aggregate([
       { $match: { author: authorId } },
       { $unwind: "$viewsHistory" },
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { authorId: st
       weekData[index] = item.views;
     });
 
-    // Last Month Views (month-wise)
+    // Last Month Views
     const monthResult = await Blog.aggregate([
       { $match: { author: authorId } },
       { $unwind: "$viewsHistory" },

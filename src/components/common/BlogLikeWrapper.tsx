@@ -12,7 +12,6 @@ interface BlogProps {
 }
 
 export default function BlogLikeWrapper({ blog }: BlogProps) {
-  // Redux se current user lo
   const currentUser = useSelector((state: RootState) => state.user.currentUser);
 
   if (!currentUser) return null; 

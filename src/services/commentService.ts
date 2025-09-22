@@ -1,7 +1,7 @@
 import useSWR from "swr";
 
 
-//Post Comment
+//Post Comment..
 export async function addComment(blogId:string,userId:string,content:string){
 
     try{
@@ -21,9 +21,8 @@ export async function addComment(blogId:string,userId:string,content:string){
     }catch(error){
         console.error("Failed to post coment",error)
     }
-
 }
-//Get Comment
+//Get Comment...
 
 export async function fetcher(url:string){
     const res=await fetch(url);
@@ -44,7 +43,7 @@ export async function fetcher(url:string){
     
 }
 
-// Delete comment
+// Delete comment...
 export async function deleteComment(commentId: string) {
   try {
     const res = await fetch(`/api/comments?commentId=${commentId}`, { method: "DELETE" });
@@ -55,7 +54,7 @@ export async function deleteComment(commentId: string) {
   }
 }
 
-// Edit comment
+// Edit comment...
 export async function editComment(commentId: string, content: string) {
   try {
     const res = await fetch(`/api/comments`, {

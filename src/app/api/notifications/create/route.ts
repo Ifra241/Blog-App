@@ -6,12 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req:NextRequest){
     await connectToDatabase();
 
-    const{userId,message}=await req.json();
+    const{userId,message,blogId}=await req.json();
     if(!userId||!message)
         return NextResponse.json({message:"Missing data"},{status:400});
 
     try{
-        const notif=await Notification.create({user:userId,message});
+        const notif=await Notification.create({user:userId,message,blogId});
          return NextResponse.json(notif, { status: 201 });
   } catch (err) {
     console.error(err);

@@ -4,6 +4,8 @@
 import { useState, useEffect } from "react";
 import { FiBell } from "react-icons/fi";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import Loader from "./Loader";
 
 interface Notification {
   _id: string;
@@ -11,6 +13,7 @@ interface Notification {
   read: boolean;
   createdAt: string;
   userId?: string;
+  blogId?:string;
 }
 
 interface Props {
@@ -20,6 +23,8 @@ interface Props {
 export default function NotificationBell({ userId }: Props) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const[loading,setLoading]=useState(false);
+  const router=useRouter();
 
   // Fetch notifications from backend
   const fetchNotifications = async () => {
@@ -30,6 +35,7 @@ export default function NotificationBell({ userId }: Props) {
       setNotifications(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
+      setNotifications([]);
     }
   };
 
@@ -65,6 +71,11 @@ export default function NotificationBell({ userId }: Props) {
       }
     }
 
+if(n.blogId){
+  setLoading(true);
+   router.push(`/dashboard/blog/${n.blogId}#comments`);
+   setOpen(false);
+}
   
   };
 
@@ -72,10 +83,17 @@ export default function NotificationBell({ userId }: Props) {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
+    <>
+    {loading&&(
+        <div className="fixed inset-0 flex items-center justify-center bg-white/70 z-50">
+        <Loader />
+      </div>
+
+    )}
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button className="p-2 rounded-full hover:bg-gray-100 relative">
-          <FiBell size={28} />
+          <FiBell size={28} title="Notification"/>
           {unreadCount > 0 && (
             <span className="absolute top-0 right-0 w-3 h-3 rounded-full bg-red-500" />
           )}
@@ -88,9 +106,9 @@ export default function NotificationBell({ userId }: Props) {
         {notifications.length === 0 ? (
           <p>No notifications</p>
         ) : (
-          notifications.map(n => (
+          notifications.map((n,indx)=> (
             <div
-              key={n._id}
+              key={n._id||indx}
               className={`p-2 border-b cursor-pointer ${n.read ? "" : "font-bold"}`}
               onClick={() => handleNotificationClick(n)}
             >
@@ -101,5 +119,6 @@ export default function NotificationBell({ userId }: Props) {
         )}
       </DialogContent>
     </Dialog>
+    </>
   );
 }
