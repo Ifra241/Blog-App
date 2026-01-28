@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server"; 
+import { NextResponse,NextRequest } from "next/server"; 
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: { blogId: string } }
 ) {
   try {
