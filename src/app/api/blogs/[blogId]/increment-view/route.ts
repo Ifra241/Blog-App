@@ -1,16 +1,15 @@
-import { NextResponse,NextRequest } from "next/server"; 
+import { NextResponse, NextRequest } from "next/server";
 import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/mongodb";
 import Blog from "@/lib/models/Blog";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { blogId: string } }
+  context: { params: { blogId: string } }
 ) {
   try {
-    const { blogId } = params;
+    const { blogId } = context.params;
 
-    // Validate blogId
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json(
         { message: "Invalid blog ID" },
@@ -18,24 +17,22 @@ export async function POST(
       );
     }
 
-    // Connect to database
     await connectToDatabase();
 
-    // Increment views
     const blog = await Blog.findByIdAndUpdate(
       blogId,
-      { 
-        $inc: { views: 1 } ,
-         $push: { viewsHistory: { createdAt: new Date() } }
-    
-    },
-      
+      {
+        $inc: { views: 1 },
+        $push: { viewsHistory: { createdAt: new Date() } }
+      },
       { new: true }
     );
 
-
     if (!blog) {
-      return NextResponse.json({ message: "Blog not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Blog not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ views: blog.views });
