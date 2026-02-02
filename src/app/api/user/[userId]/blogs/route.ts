@@ -6,13 +6,14 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectToDatabase();
 
     
-    const { userId } = params;
+    const resolvedParams = await params;
+    const { userId } = resolvedParams; 
 
     const blogs = await Blog.find({ author: userId }).sort({ createdAt: -1 });
 

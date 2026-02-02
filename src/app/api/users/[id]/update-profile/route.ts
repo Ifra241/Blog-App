@@ -4,10 +4,11 @@ import { connectToDatabase } from "@/lib/mongodb";
 import mongoose from "mongoose";
 import { NextResponse } from "next/server";
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
-    const { id } = params;
+    const resolvedParams = await params;
+    const { id } = resolvedParams; 
     const data = await req.json();
 
     if (!mongoose.Types.ObjectId.isValid(id)) {

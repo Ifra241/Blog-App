@@ -14,7 +14,7 @@ import BlogCommentWrapper from "@/components/common/CommentWrapper";
 import DeleteButton from "@/components/common/BlogDelete";
 
 interface BlogPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
  export interface PopulatedBlog {
@@ -38,7 +38,8 @@ savedBy?: Types.ObjectId[];
 }
 
 export default async function BlogDetailPage({ params }: BlogPageProps) {
-  const { id } =  params;
+  const resolvedParams = await params;
+  const { id } =  resolvedParams;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return notFound();

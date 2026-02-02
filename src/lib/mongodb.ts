@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI=process.env.MONGODB_URI;
-
-if(!MONGODB_URI){
-    throw new  Error("Please define the MONGODB_URL in .env.local");
-}
-
+// Defer MONGODB_URI check until connectToDatabase() to avoid throwing during module initialization
 interface MongooseCache{
     con:typeof mongoose|null;
     promise:Promise<typeof mongoose>|null;
@@ -25,13 +20,18 @@ globalForMongoose.mongooseCache=cached;
 
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
-    if(cached.con)return cached.con
-    if(!cached.promise){
-        cached.promise=mongoose.connect(MONGODB_URI!,{
-            bufferCommands:false,
+    const MONGODB_URI = process.env.MONGODB_URI;
+    if (!MONGODB_URI) {
+        throw new Error("Please define the MONGODB_URI in .env.local");
+    }
+
+    if (cached.con) return cached.con;
+    if (!cached.promise) {
+        cached.promise = mongoose.connect(MONGODB_URI, {
+            bufferCommands: false,
         });
     }
-    cached.con=await cached.promise;
+    cached.con = await cached.promise;
     return cached.con;
 }
 export const mongooseCache = cached;

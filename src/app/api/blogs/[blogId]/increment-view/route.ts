@@ -5,10 +5,11 @@ import Blog from "@/lib/models/Blog";
 
 export async function POST(
   req: NextRequest,
-  context: { params: { blogId: string } }
+  { params }: { params: Promise<{ blogId: string }> }
 ) {
   try {
-    const { blogId } = context.params;
+    const resolvedParams = await params;
+    const { blogId } = resolvedParams;
 
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return NextResponse.json(

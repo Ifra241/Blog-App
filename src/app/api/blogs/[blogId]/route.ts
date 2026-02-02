@@ -4,10 +4,14 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
 
-export async function GET(req:NextRequest,{params}:{params:{blogId:string}}){
-    try{
-        await connectToDatabase();
-          const blogId  = params.blogId; 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ blogId: string }> }
+) {
+  try {
+    await connectToDatabase();
+    const resolvedParams = await params;
+    const blogId  = resolvedParams.blogId; 
 
          const blog=await Blog.findById(blogId).populate("author",
       "fullname profilePic");
@@ -30,11 +34,12 @@ export async function GET(req:NextRequest,{params}:{params:{blogId:string}}){
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { blogId: string } }
+  { params }: { params: Promise<{ blogId: string }> }
 ) {
   try {
     await connectToDatabase();
-    const blogId = params.blogId;
+    const resolvedParams = await params;
+    const blogId = resolvedParams.blogId; 
     const { title, content, category, image } = await req.json();
 
     const blog = await Blog.findById(blogId);
@@ -71,12 +76,16 @@ export async function PUT(
 //Delete Blog
 
 
-export  async function DELETE(req:NextRequest,{params}:{params:{blogId:string}}){
+export  async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ blogId: string }> }
+) {
 
-  try{
+  try {
     await connectToDatabase();
 
-    const{blogId}=params;
+    const resolvedParams = await params;
+    const { blogId } = resolvedParams; 
 
     const blog=await Blog.findById(blogId);
     if(!blog)return NextResponse.json({message:"Blog Not Found"},{status:404});

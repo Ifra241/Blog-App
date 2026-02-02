@@ -6,18 +6,20 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { blogId: string } }
+  { params }: { params: Promise<{ blogId: string }> }
 ) {
   try {
     await connectToDatabase();
 
     const { userId,currentUserName }: { userId: string ,currentUserName:string} = await req.json();
 
+    const resolvedParams = await params;
+
     if (!Types.ObjectId.isValid(userId)) {
       return NextResponse.json({ message: "Invalid UserId" }, { status: 400 });
     }
 
-    const blog: BlogProp | null = await Blog.findById(params.blogId);
+    const blog: BlogProp | null = await Blog.findById(resolvedParams.blogId);
     if (!blog) {
       return NextResponse.json({ message: "Blog Not Found" }, { status: 404 });
     }
@@ -37,7 +39,7 @@ export async function POST(
 if(blog.author && blog.author.toString()!==userId){
   await createNotification(blog.author.toString(),
    `${currentUserName} liked your blog "${blog.title}"`,
-   params.blogId
+   resolvedParams.blogId
 );
 }
 }

@@ -3,18 +3,22 @@ import { connectToDatabase } from "@/lib/mongodb";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { authorId: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ authorId: string }> }
+) {
   try {
     await connectToDatabase();
 
-    if (!mongoose.Types.ObjectId.isValid(params.authorId)) {
+    const resolvedParams = await params;
+    if (!mongoose.Types.ObjectId.isValid(resolvedParams.authorId)) {
       return NextResponse.json(
         { success: false, message: "Invalid author ID" },
         { status: 400 }
       );
     }
 
-    const authorId = new mongoose.Types.ObjectId(params.authorId);
+    const authorId = new mongoose.Types.ObjectId(resolvedParams.authorId);
 
     const now = new Date();
     const lastWeek = new Date();

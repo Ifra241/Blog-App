@@ -4,11 +4,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     await connectToDatabase();
-     const { userId } = params;
+    const resolvedParams = await params;
+     const { userId } = resolvedParams; 
 
     // Populate followers and following with only fullname and profilePic
     const user = await User.findById(userId)

@@ -4,11 +4,12 @@ import { connectToDatabase } from "@/lib/mongodb";
 import mongoose from "mongoose";
 
 interface Props {
-  params: { userId: string };
+  params: Promise<{ userId: string }>;
 }
 
 export async function GET(req: Request, { params }: Props) {
-  const { userId } = params;
+  const resolvedParams = await params;
+  const { userId } = resolvedParams;
 
   if (!userId) {
     return NextResponse.json({ message: "Missing userId" }, { status: 400 });
